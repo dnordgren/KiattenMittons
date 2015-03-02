@@ -35,3 +35,15 @@ spoiler_orderings <- function(vote_data) {
 	colnames(missings) <- vote_data$movie
 	cbind(dat, missings)
 }
+
+pareto_dominators <- function(vote_data) {
+	# returns a list of pairs of row numbers, where row[1] pareto dominates row[2]
+	all_pairs <- combn(vote_data$movie, 2)
+	
+	dominates <- apply(all_pairs, 2, function(pair) {
+		# 1 pareto dominates 2 if all agents prefer 1 to 2
+		all(vote_data[pair[1], -1, with=F] > vote_data[pair[2], -1, with=F])
+	})
+	
+	all_pairs[,dominates]
+}
