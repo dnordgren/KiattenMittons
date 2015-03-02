@@ -8,22 +8,22 @@ get_order <- function(vote_data=plurality_data) {
 	vote_data[order(votes, -tolower(movie), decreasing = T), list(movie, votes)]
 }
 
-get_condorcet <- function() {
+get_condorcet <- function(vote_data=plurality_data) {
 	
 	half_prefer <- function(row_num) {
-		others <- (1:nrow(plurality_data))[-row_num]
+		others <- (1:nrow(vote_data))[-row_num]
 		
-		current_row <- plurality_data[row_num, -1, with=F]
+		current_row <- vote_data[row_num, -1, with=F]
 		prefered_over <- sapply(others, function(other) {
-			other_row <- plurality_data[other, -1, with=F]
+			other_row <- vote_data[other, -1, with=F]
 			mean(current_row > other_row) >= .5
 		})
 		all(prefered_over)
 	}
 	
-	condorcet <- which(sapply(1:nrow(plurality_data), half_prefer))
+	condorcet <- which(sapply(1:nrow(vote_data), half_prefer))
 	if(length(condorcet)) {
-		return(plurality_data$movie[condorcet])
+		return(vote_data$movie[condorcet])
 	}
 	return("No condorcet winner")
 }
