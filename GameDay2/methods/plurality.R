@@ -28,13 +28,13 @@ get_condorcet <- function() {
 	return("No condorcet winner")
 }
 
-spoiler_orderings <- function() {
+spoiler_orderings <- function(vote_data=plurality_data) {
 	dat <- data.frame(original=get_order()[,movie])
 	
-	missings <- sapply(1:nrow(plurality_data), function(current_row) {
-		new_order <- get_order(plurality_data[-current_row])
+	missings <- sapply(1:nrow(vote_data), function(current_row) {
+		new_order <- get_order(vote_data[-current_row])
 		c(new_order[,movie], NA)
 	})
-	colnames(missings) <- plurality_data$movie
+	colnames(missings) <- vote_data$movie
 	cbind(dat, missings)
 }
