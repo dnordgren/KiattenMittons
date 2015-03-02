@@ -45,5 +45,11 @@ pareto_dominators <- function(vote_data) {
 		all(vote_data[pair[1], -1, with=F] > vote_data[pair[2], -1, with=F])
 	})
 	
-	all_pairs[,dominates]
+	dom_pairs <- all_pairs[,dominates,drop=F]
+	
+	if(length(dom_pairs) == 0) {
+		return(list())
+	}
+	
+	lapply(1:ncol(dom_pairs), function(ind) {dom_pairs[,ind]})
 }
