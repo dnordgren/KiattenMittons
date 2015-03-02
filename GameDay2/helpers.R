@@ -3,7 +3,15 @@ library(data.table)
 get_data <- (function() {
 	source('app_config.R', local = T)
 	data_dir <- get_config('data_dir')
-	function(fname) {
-		fread(paste0(data_dir, '/', fname))
+	function(fname, rank_flip=F) {
+		vote_data <- fread(paste0(data_dir, '/', fname))
+		
+		if(rank_flip) {
+			vote_cols <- colnames(vote_data)[-1]
+			n <- nrow(vote_data)
+			vote_data[,(vote_cols):=lapply(.SD, function(x){n - x}), .SDcols=vote_cols]
+		}
+		
+		vote_data
 	}
 })()
