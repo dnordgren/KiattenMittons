@@ -33,5 +33,3 @@ get_winner <- function() {
 }
 
 get_condorcet(elimination_data)
-spoiler_orderings(elimination_data)
-
