@@ -1,11 +1,11 @@
 # plurality
 source('helpers.R')
-plurality_data <- get_data('plurality.csv')
+plurality_data <- get_data('plurality_condorcet.csv')
 
 # gets the preference order, ties broken by alphabetical order
-get_order <- function() {
-	plurality_data$votes <- rowSums(plurality_data[,-1,with=F])
-	plurality_data[order(votes, -tolower(movie), decreasing = T), list(movie, votes)]
+get_order <- function(vote_data=plurality_data) {
+	vote_data$votes <- rowSums(vote_data[,-1,with=F])
+	vote_data[order(votes, -tolower(movie), decreasing = T), list(movie, votes)]
 }
 
 get_condorcet <- function() {
@@ -26,4 +26,15 @@ get_condorcet <- function() {
 		return(plurality_data$movie[condorcet])
 	}
 	return("No condorcet winner")
+}
+
+spoiler_orderings <- function() {
+	dat <- data.frame(original=get_order()[,movie])
+	
+	missings <- sapply(1:nrow(plurality_data), function(current_row) {
+		new_order <- get_order(plurality_data[-current_row])
+		c(new_order[,movie], NA)
+	})
+	colnames(missings) <- plurality_data$movie
+	cbind(dat, missings)
 }
