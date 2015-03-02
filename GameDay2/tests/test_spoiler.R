@@ -1,5 +1,5 @@
 setwd('..')
-
+context('Spoiler')
 test_that('Borda from H15 Sensitivity', {
 	dat <- get_data('sensitivity.csv', T)
 	spo <- spoiler_orderings(dat)

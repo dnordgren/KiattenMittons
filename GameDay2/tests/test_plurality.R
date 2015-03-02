@@ -1,5 +1,5 @@
 setwd('..')
-
+context('Plurality')
 test_that('Basic plurality', {
 	dat <- get_data('plurality.csv')
 	winner <- get_order(dat)[1,movie]
