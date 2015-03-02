@@ -6,10 +6,11 @@ source('vote_based.R')
 
 elimination_data <- get_data('elimination.csv', rank_flip = T)
 
-get_winner <- function() {
+get_order <- function(vote_data) {
+	order <- c()
 	# using a for loop because dependent on previous iterations
-	survivors <- copy(elimination_data)
-	for(i in 1:(nrow(elimination_data) - 1)) {
+	survivors <- copy(vote_data)
+	for(i in 1:(nrow(vote_data) - 1)) {
 		
 		votes_vec <- apply(survivors[,-1,with=F], 2, which.max)
 		votes_table <- table(votes_vec)
@@ -26,10 +27,12 @@ get_winner <- function() {
 		
 		# in case of tie, eliminates the last alphabetically
 		chosen <- elim_names[order(elim_names, decreasing = T)][1]
-		
+		order <- c(chosen, order)
 		survivors <- survivors[movie != chosen]
 	}
-	survivors$movie
+	data.table(movie=c(survivors$movie, order))
 }
 
 get_condorcet(elimination_data)
+get_order(elimination_data)
+spoiler_orderings(elimination_data)
