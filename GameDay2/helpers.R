@@ -11,7 +11,7 @@ get_data <- (function() {
 			n <- nrow(vote_data)
 			vote_data[,(vote_cols):=lapply(.SD, function(x){n - x}), .SDcols=vote_cols]
 		}
-		
+		setkey(vote_data, 'movie')
 		vote_data
 	}
 })()
