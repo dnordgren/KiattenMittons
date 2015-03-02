@@ -1,4 +1,5 @@
 # plurality
+source('helpers.R')
 plurality_data <- get_data('plurality.csv')
 
 # gets the preference order, ties broken by alphabetical order
