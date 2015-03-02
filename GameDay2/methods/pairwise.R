@@ -26,15 +26,20 @@ mano_a_mano <- function(vote_data, r1, r2) {
 	r2
 }
 
-get_winner <- function(vote_data) {
+get_order <- function(vote_data) {
 	# test ordering
+	out_order <- c()
 	order <- 1:nrow(vote_data)
 	remaining_order <- order
 	for(i in 1:(length(order) - 1)) {
 		winner <- mano_a_mano(vote_data, remaining_order[1], remaining_order[2])
+		out_order <- c(vote_data$movie[winner], out_order)
 		remaining_order <- c(winner, remaining_order[c(-1, -2)])
 	}
-	vote_data$movie[remaining_order]
+	out_order <- c(vote_data$movie[remaining_order], out_order)
+	data.table(movie=out_order)
 }
 
 get_condorcet(pairwise_data)
+get_order(pairwise_data)
+spoiler_orderings(pairwise_data)
