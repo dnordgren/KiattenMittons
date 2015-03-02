@@ -1,4 +1,6 @@
 # methods for vote based voting methods
+library(gtools)
+
 # gets the preference order, ties broken by alphabetical order
 get_order <- function(vote_data) {
 	vote_data$votes <- rowSums(vote_data[,-1,with=F])
@@ -52,4 +54,22 @@ pareto_dominators <- function(vote_data) {
 	}
 	
 	lapply(1:ncol(dom_pairs), function(ind) {dom_pairs[,ind]})
+}
+
+any_orderings <- function(vote_data) {
+	source('pairwise_helpers.R', local=T)
+	dominators <- pareto_dominators(vote_data)
+	all_orders <- permutations(nrow(vote_data), nrow(vote_data))
+	
+	invisible(apply(all_orders, 1, function(morder) {
+		movie_order <- get_order(vote_data, morder)[,movie]
+		lapply(dominators, function(pair) {
+			interesting <- which(movie_order == pair[1]) > which(movie_order == pair[2])
+			if(interesting) {
+				cat("Order:\n")
+				cat(paste(paste('\t', morder), collapse='\n'))
+				cat(sprintf("\nResults in %s finishing behind %s\n", pair[1], pair[2]))
+			}
+		})
+	}))
 }
