@@ -31,7 +31,14 @@ spoiler_orderings <- function(vote_data) {
 	dat <- data.frame(original=get_order(vote_data)[,movie])
 	
 	missings <- sapply(1:nrow(vote_data), function(current_row) {
-		new_order <- get_order(vote_data[-current_row])
+		sub_votes <- vote_data[-current_row]
+		vote_cols <- colnames(sub_votes)[-1]
+		# bumping up scores for non-eliminated items
+		sub_votes[,(vote_cols):=lapply(.SD, function(x) {
+			gap <- which(!(0:(nrow(vote_data)-1) %in% x)) - 1
+			ifelse(x > gap, x-1, x)
+		}), .SDcols=vote_cols]
+		new_order <- get_order(sub_votes)
 		c(new_order[,movie], NA)
 	})
 	colnames(missings) <- vote_data$movie
