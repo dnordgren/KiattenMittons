@@ -1,4 +1,5 @@
 library(data.table)
+library(xlsx)
 
 get_data <- (function() {
 	source('app_config.R', local = T)
