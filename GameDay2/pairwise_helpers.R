@@ -26,11 +26,11 @@ get_order <- function(vote_data, base_order=NULL) {
 		base_order <- 1:nrow(vote_data)
 	}
 	remaining_order <- base_order
-	for(i in 1:(length(base_order) - 1)) {
+	while(length(remaining_order)>1) {
 		winner <- mano_a_mano(vote_data, remaining_order[1], remaining_order[2])
 		loser <- ifelse(winner==remaining_order[1], remaining_order[2], remaining_order[1])
 		out_order <- c(vote_data$movie[loser], out_order)
-		remaining_order <- c(winner, remaining_order[c(-1, -2)])
+		remaining_order <- c(remaining_order[c(-1, -2)], winner)
 	}
 	out_order <- c(vote_data$movie[remaining_order], out_order)
 	data.table(movie=out_order)
