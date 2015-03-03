@@ -1,3 +1,4 @@
 <config>
 	<item key="data_dir" value="<some directory>" />
+	<item key="team_name" value="<team name>" />
 </config>

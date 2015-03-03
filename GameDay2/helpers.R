@@ -15,3 +15,11 @@ get_data <- (function() {
 		vote_data
 	}
 })()
+
+to_excel <- function(round, movies) {
+	source('app_config.R', local=T)
+	team_name <- get_config('team_name')
+	filename <- sprintf('Round%s_%s.xlsx', round, team_name)
+	write.xlsx(x = movies, file = filename,
+			   sheetName = sprintf('Round%s', round), row.names = FALSE)
+}
