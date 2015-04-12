@@ -2,7 +2,6 @@ package kiattenMittons;
 
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 
-
 public class Player {
 	private double per;
 	private TeamName teamName;
