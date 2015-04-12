@@ -8,6 +8,7 @@ public class TeamGenerator {
 		UTAH, BKN, SA, IND, ORL,
 		NY, MEM, DET, ATL, TOR,
 		BOS, LAL, WSH, MIN, DAL,
-		CHA, DEN, PHX, MIL, PHI
+		CHA, DEN, PHX, MIL, PHI,
+		FREE
 	}
 }
