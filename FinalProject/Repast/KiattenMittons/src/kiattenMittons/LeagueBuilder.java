@@ -1,17 +1,20 @@
 package kiattenMittons;
 
+import java.util.List;
+
+import kiattenMittons.LeagueGeneration.PlayerGenerator;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
 
-public class LeagueBuilder implements ContextBuilder {
+public class LeagueBuilder implements ContextBuilder<Object> {
 
-	public Context build(Context context) {
+	public Context<Object> build(Context<Object> context) {
 		
 		context.setId("NBA");
 		
-		int numPlayers = 300;
-		for (int i = 0; i < numPlayers; i++) {
-			context.add(new Player());
+		List<Player> initialPlayers = PlayerGenerator.generatePlayers();
+		for (int i = 0; i < initialPlayers.size(); i++) {
+			context.add(initialPlayers.get(i));
 		}
 		
 		return context;
