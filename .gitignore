@@ -54,6 +54,9 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
-
 # Repast
 repast-licenses/
+docs/
+model_description.txt
+ReadMe.txt
+
