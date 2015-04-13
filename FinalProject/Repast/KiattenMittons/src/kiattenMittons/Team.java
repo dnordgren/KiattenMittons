@@ -2,7 +2,9 @@ package kiattenMittons;
 
 import java.util.*;
 
+import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.util.ContextUtils;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 
 public class Team {
@@ -40,6 +42,19 @@ public class Team {
 	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void doSomething() {
-		System.out.println("NBA");
+		ArrayList<Player> playersToRemove = new ArrayList<Player>();
+		for (Player player: players) {
+			player.updateYearsLeft();
+			int yearsLeft = player.getYearsLeft();
+			if (yearsLeft <= 0) {
+				playersToRemove.add(player);
+			}
+		}
+
+		for (Player player: playersToRemove) {
+			players.remove(player);
+			Context<Object> context = ContextUtils.getContext(player);
+			context.remove(player);
+		}
 	}
 }
