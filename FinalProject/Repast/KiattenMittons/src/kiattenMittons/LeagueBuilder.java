@@ -38,6 +38,10 @@ public class LeagueBuilder implements ContextBuilder<Object> {
 		for (Team team: teams) {
 			context.add(team);
 		}
+		
+		League league = new League(teams);
+		context.add(league);
+		
 		return context;
 	}
 
