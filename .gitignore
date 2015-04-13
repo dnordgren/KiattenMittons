@@ -12,4 +12,8 @@
 hs_err_pid*
 .Rproj.user
 .Rhistory
+*.csv
+config.xml
+!GameDay2/test_votes/*
 GameDay1/q/*
+
