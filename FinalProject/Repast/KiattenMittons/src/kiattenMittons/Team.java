@@ -1,10 +1,14 @@
 package kiattenMittons;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import repast.simphony.engine.schedule.ScheduledMethod;
 import kiattenMittons.Helpers.WeightScaler;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
+import repast.simphony.context.Context;
+import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.util.ContextUtils;
 
 public class Team {
 	private TeamName teamName;
@@ -107,6 +111,19 @@ public class Team {
 	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void doSomething() {
-		System.out.println("NBA");
+		ArrayList<Player> playersToRemove = new ArrayList<Player>();
+		for (Player player: players) {
+			player.updateYearsLeft();
+			int yearsLeft = player.getYearsLeft();
+			if (yearsLeft <= 0) {
+				playersToRemove.add(player);
+			}
+		}
+
+		for (Player player: playersToRemove) {
+			players.remove(player);
+			Context<Object> context = ContextUtils.getContext(player);
+			context.remove(player);
+		}
 	}
 }

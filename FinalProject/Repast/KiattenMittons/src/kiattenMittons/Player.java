@@ -7,6 +7,7 @@ import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 public class Player {
 	private double per;
 	private TeamName teamName;
+	private int yearsLeft;
 	
 	//TODO: make sure that this is sorting correctly
 	public static Comparator<Player> comparator = new Comparator<Player>() {
@@ -32,9 +33,10 @@ public class Player {
 	 * for setting up the initial league
 	 * @param per
 	 */
-	public Player(double per, TeamName teamName) {
+	public Player(double per, TeamName teamName, int yearsLeft) {
 		this.per = per;
 		this.teamName = teamName;
+		this.yearsLeft = yearsLeft;
 	}
 	
 	/**
@@ -57,8 +59,16 @@ public class Player {
 	public TeamName getTeamName() {
 		return teamName;
 	}
-	
+
 	public void setTeamName(TeamName teamName) {
 		this.teamName = teamName;
+	}
+
+	public int getYearsLeft() {
+		return this.yearsLeft;
+	}
+
+	public void updateYearsLeft() {
+		--this.yearsLeft;
 	}
 }
