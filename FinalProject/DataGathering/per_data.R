@@ -19,4 +19,4 @@ get_page <- function(page_number) {
 per_tables <- lapply(1:8, get_page)
 per_data <- rbindlist(per_tables) 
 
-write.csv(per_data[,list(team, PER)], row.names = F, col.names = F, file='../Repast/KiattenMittons/resources/players.csv')
+# write.csv(per_data[,list(team, PER)], row.names = F, col.names = F, file='../Repast/KiattenMittons/resources/players.csv')
