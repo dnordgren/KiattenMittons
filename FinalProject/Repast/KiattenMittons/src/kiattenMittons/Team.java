@@ -2,6 +2,7 @@ package kiattenMittons;
 
 import java.util.*;
 
+import repast.simphony.engine.schedule.ScheduledMethod;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 
 public class Team {
@@ -35,5 +36,10 @@ public class Team {
 
 	public void removePlayer(Player player) {
 		this.players.remove(player);
+	}
+	
+	@ScheduledMethod(start = 1, interval = 1)
+	public void doSomething() {
+		System.out.println("NBA");
 	}
 }

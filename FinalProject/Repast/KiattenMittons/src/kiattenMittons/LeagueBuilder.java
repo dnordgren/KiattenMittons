@@ -12,7 +12,7 @@ public class LeagueBuilder implements ContextBuilder<Object> {
 
 	public Context<Object> build(Context<Object> context) {
 
-		context.setId("NBA");
+		context.setId("KiattenMittons");
 
 		List<Player> initialPlayers = PlayerGenerator.generatePlayers();
 		for (Player player: initialPlayers) {
