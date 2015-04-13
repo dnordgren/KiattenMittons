@@ -61,3 +61,7 @@ model_description.txt
 ReadMe.txt
 velocity.log
 Repast.settings
+*.csv
+config.xml
+!GameDay2/test_votes/*
+GameDay1/q/*
