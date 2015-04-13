@@ -2,7 +2,6 @@ package kiattenMittons.LeagueGeneration;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -40,17 +39,7 @@ public class PlayerGenerator {
 			playerSample.add(samplePlayer());
 		}
 		
-		//TODO: make sure that this is sorting correctly
-		Collections.sort(playerSample, new Comparator<Player>() {
-			public int compare(Player p1, Player p2) {
-				if (p1.getPER() > p2.getPER()) {
-					return 1;
-				} else if (p1.getPER() < p2.getPER()) {
-					return -1;
-				}
-				return 0;
-			}
-		});
+		Collections.sort(playerSample, Player.comparator);
 		
 		Player draftedPlayer = playerSample.get(pick - 1);
 		draftedPlayer.setTeamName(teamName);
