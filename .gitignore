@@ -29,6 +29,7 @@ tmp/
 local.properties
 #.settings/
 .loadpath
+debug.log
 
 # Eclipse Core
 #.project
