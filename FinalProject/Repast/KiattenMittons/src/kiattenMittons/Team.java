@@ -8,6 +8,7 @@ import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 public class Team {
 	private TeamName teamName;
 	private List<Player> players;
+	private List<Double> powerIndices;
 	
 	// Weights based on the proportions of minutes given to actual NBA players
 	private static final double[] weights = {
@@ -23,6 +24,7 @@ public class Team {
 	public Team(TeamName teamName) {
 		this.teamName = teamName;
 		this.players = new ArrayList<Player>();
+		this.powerIndices = new ArrayList<Double>();
 	}
 
 	public TeamName getTeamName() {
@@ -48,7 +50,7 @@ public class Team {
 	/**
 	 * @return power index (weighted sum of PERs)
 	 */
-	public double getPowerIndex() {
+	private double getPowerIndex() {
 		Collections.sort(players, Player.comparator);
 		
 		/*
@@ -57,10 +59,22 @@ public class Team {
 		 */
 		double powerIndex = 0;
 		for(int i = 0; i < players.size(); i++) {
-			powerIndex += players.get(i).getPER() * weights[i]; 
+			if(i < weights.length) {				
+				powerIndex += players.get(i).getPER() * weights[i]; 
+			}
+			/*
+			 *  teams with more than 15 players get nothing for those players,
+			 *  because they should never have more than 15 players
+			 */
 		}
 		
 		return powerIndex;
+	}
+
+	// TODO: we might want to combine this with the method for removing old players so we can be sure of the order of execution 
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH)
+	public void recordPowerIndex() {
+		powerIndices.add(getPowerIndex());
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
