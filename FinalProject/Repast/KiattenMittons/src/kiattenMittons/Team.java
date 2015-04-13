@@ -3,6 +3,7 @@ package kiattenMittons;
 import java.util.*;
 
 import repast.simphony.engine.schedule.ScheduledMethod;
+import kiattenMittons.Helpers.WeightScaler;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 
 public class Team {
@@ -11,10 +12,14 @@ public class Team {
 	private List<Double> powerIndices;
 	
 	// Weights based on the proportions of minutes given to actual NBA players
-	private static final double[] weights = {
+	private static final double[] PLAYER_WEIGHTS = {
 		0.10288684, 0.09795186, 0.09288728, 0.08755351, 0.07967748,
 		0.07162200, 0.06504203, 0.06070489, 0.05616697, 0.05136091,
 		0.04838750, 0.04834696, 0.04645859, 0.04923016, 0.04172301
+	};
+	
+	private static final double[] YEAR_WEIGHTS = {
+		.1, .1, .2, .2, .2, .1, .1
 	};
 	
 	/**
@@ -59,8 +64,8 @@ public class Team {
 		 */
 		double powerIndex = 0;
 		for(int i = 0; i < players.size(); i++) {
-			if(i < weights.length) {				
-				powerIndex += players.get(i).getPER() * weights[i]; 
+			if(i < PLAYER_WEIGHTS.length) {				
+				powerIndex += players.get(i).getPER() * PLAYER_WEIGHTS[i]; 
 			}
 			/*
 			 *  teams with more than 15 players get nothing for those players,
@@ -69,6 +74,29 @@ public class Team {
 		}
 		
 		return powerIndex;
+	}
+	
+	/**
+	 * Compute the contribution that this team makes to the
+	 * overall league parity value 
+	 * @return team contribution to parity
+	 */
+	public double getParityContribution() {
+		
+		if(powerIndices.size() == 0) {
+			return 0;
+		}
+		
+		int size = Math.min(powerIndices.size() - 1, YEAR_WEIGHTS.length);
+		double[] scaledWeights = WeightScaler.scaleWeights(YEAR_WEIGHTS, size);
+		
+		double sum = 0, diff;
+		for(int i = 0; i < size - 1; i++) {
+			diff = Math.abs(powerIndices.get(size - 1) - powerIndices.get(size - (2 + i)));
+			sum += diff * scaledWeights[i];
+		}
+
+		return sum;
 	}
 
 	// TODO: we might want to combine this with the method for removing old players so we can be sure of the order of execution 
