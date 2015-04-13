@@ -5,6 +5,7 @@ import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 public class Player {
 	private double per;
 	private TeamName teamName;
+	private int yearsLeft;
 	
 	/**
 	 * Constructor that auto-generates player efficiency
@@ -18,9 +19,10 @@ public class Player {
 	 * for setting up the initial league
 	 * @param per
 	 */
-	public Player(double per, TeamName teamName) {
+	public Player(double per, TeamName teamName, int yearsLeft) {
 		this.per = per;
 		this.teamName = teamName;
+		this.yearsLeft = yearsLeft;
 	}
 	
 	/**
@@ -43,8 +45,16 @@ public class Player {
 	public TeamName getTeamName() {
 		return teamName;
 	}
-	
+
 	public void setTeamName(TeamName teamName) {
 		this.teamName = teamName;
+	}
+
+	public int getYearsLeft() {
+		return this.yearsLeft;
+	}
+
+	public void updateYearsLeft() {
+		--this.yearsLeft;
 	}
 }
