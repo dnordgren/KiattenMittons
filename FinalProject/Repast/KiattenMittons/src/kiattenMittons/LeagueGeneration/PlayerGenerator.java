@@ -59,7 +59,7 @@ public class PlayerGenerator {
 	 * some initial values
 	 * @return a random Player based on the current NBA distribution
 	 */
-	private Player samplePlayer() {
+	private static Player samplePlayer() {
 		int index = randomGenerator.nextInt(players.size());
 		
 		Player sampled = players.get(index);
@@ -84,7 +84,7 @@ public class PlayerGenerator {
 	 * based on the original distribution of ratings.
 	 * @return
 	 */
-	public List<Player> generateDraftClass() {
+	public static List<Player> generateDraftClass() {
 		List<Player> draftClass = new ArrayList<Player>();
 		
 		for(int i = 0; i < DRAFT_SIZE; i++) {

@@ -2,7 +2,10 @@ package kiattenMittons;
 
 import java.util.List;
 
+import kiattenMittons.LeagueGeneration.PlayerGenerator;
+import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.util.ContextUtils;
 
 public class League {
 	private List<Team> teams;
@@ -26,6 +29,11 @@ public class League {
 	
 	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 4.0)
 	public void draft() {
+		List<Player> draftClass = PlayerGenerator.generateDraftClass();
 		
+		Context<Object> context = ContextUtils.getContext(this);
+		for(Player player : draftClass) {
+			context.add(player);
+		}
 	}
 }
