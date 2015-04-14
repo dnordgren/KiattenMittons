@@ -4,6 +4,9 @@ import java.util.Comparator;
 
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 import kiattenMittons.Contract;
+import repast.simphony.context.Context;
+import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.util.ContextUtils;
 
 public class Player {
 	private double per;
@@ -66,14 +69,19 @@ public class Player {
 		return this.yearsLeft;
 	}
 
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 1.0)
 	public void updateYearsLeft() {
-		--this.yearsLeft;
+		if (0 == --this.yearsLeft) {
+			Context<Object> context = ContextUtils.getContext(this);
+ 			context.remove(this);
+		}
 	}
 	
 	public Contract getContract() {
 		return this.contract;
 	}
 	
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 2.0)
 	public void updateContract() {
 		this.contract.updateYearsRemaining();
 	}
