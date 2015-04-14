@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import kiattenMittons.Player;
+import kiattenMittons.Helpers.WeightedProbability;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 
 public class PlayerGenerator {
@@ -13,7 +14,8 @@ public class PlayerGenerator {
 	private static final int NUM_PICKS = 60; //the number of picks in the draft	
 	private static Random randomGenerator = new Random();
 	private static List<Player> players = PlayerFileReader.GeneratePlayers();
-	private static final int[] CONTRACT_LENGTHS = {2, 3, 4};
+	private static final int[] INIT_CONTRACT_LENGTHS = {1, 2, 3, 4};
+	private static final double[] INIT_CONTRACT_WEIGHTS = {1.0/3.0, 1.0/3.0, 2.0/9.0, 1.0/9.0};
 	
 	/*
 	 * approximated from an exponential distribution with rate = 1/6 
@@ -49,8 +51,8 @@ public class PlayerGenerator {
 	 * @return contract length
 	 */
 	public static int generateSeedContractLength() {
-		int index = randomGenerator.nextInt(CONTRACT_LENGTHS.length);
-		return CONTRACT_LENGTHS[index];
+		int index = WeightedProbability.weightedSelect(INIT_CONTRACT_WEIGHTS);
+		return INIT_CONTRACT_LENGTHS[index];
 	}
 	
 	/**
@@ -87,19 +89,10 @@ public class PlayerGenerator {
 	/**
 	 * Randomly select a number of years remaining
 	 * based on the set of weights defined
-	 * @return
+	 * @return number of years remaining in NBA
 	 */
 	private static int generateYearsLeft() {
-		double generated = randomGenerator.nextDouble();
-		
-		double sum = 0;
-		for(int i = 0; i < YEAR_WEIGHTS.length; i++) {
-			sum += YEAR_WEIGHTS[i];
-			if(sum > generated) {
-				return (i + 1);
-			}
-		}
-		//if nothing was matched, it's the last year
-		return YEAR_WEIGHTS.length - 1;
+		//returning + 1 since we want the range to start at 1
+		return WeightedProbability.weightedSelect(YEAR_WEIGHTS) + 1;
 	}
 }
