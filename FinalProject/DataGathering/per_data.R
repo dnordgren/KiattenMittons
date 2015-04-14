@@ -11,12 +11,21 @@ get_page <- function(page_number) {
 	setnames(per_table, sapply(per_table[1,], as.character))
 	per_table <- per_table[RK != "RK",]
 	per_table[,PER:=as.numeric(as.character(PER))]
+	per_table[,MPG:=as.numeric(as.character(MPG))]
 	per_table[,team:=regmatches(PLAYER, regexpr('[A-Z]+$', PLAYER))]
 	per_table	
 }
 
 # there are 10 pages
 per_tables <- lapply(1:10, get_page)
-per_data <- rbindlist(per_tables) 
+per_data <- rbindlist(per_tables)
+
+# players that are really bad, or don't actually play get PER = 0
+per_data[PER<0 | MPG <= 6.09,PER:=0]
+
+# take only the top 15 on each team
+per_data <- per_data[order(PER, decreasing = T)]
+per_data[,rank:=order(PER, decreasing = T), by=team]
+per_data <- per_data[rank <= 15]
 
 # write.csv(per_data[,list(team, PER)], row.names = F, col.names = F, file='../Repast/KiattenMittons/resources/players.csv')
