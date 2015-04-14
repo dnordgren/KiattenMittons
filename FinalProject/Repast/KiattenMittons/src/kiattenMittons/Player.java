@@ -1,11 +1,25 @@
 package kiattenMittons;
 
+import java.util.Comparator;
+
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 
 public class Player {
 	private double per;
 	private TeamName teamName;
 	private int yearsLeft;
+	
+	//TODO: make sure that this is sorting correctly
+	public static Comparator<Player> comparator = new Comparator<Player>() {
+		public int compare(Player p1, Player p2) {
+			if (p1.getPER() > p2.getPER()) {
+				return 1;
+			} else if (p1.getPER() < p2.getPER()) {
+				return -1;
+			}
+			return 0;
+		}
+	};
 	
 	/**
 	 * Constructor that auto-generates player efficiency
