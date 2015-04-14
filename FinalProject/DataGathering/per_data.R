@@ -28,4 +28,4 @@ per_data <- per_data[order(PER, decreasing = T)]
 per_data[,rank:=order(PER, decreasing = T), by=team]
 per_data <- per_data[rank <= 15]
 
-# write.csv(per_data[,list(team, PER)], row.names = F, col.names = F, file='../Repast/KiattenMittons/resources/players.csv')
+# write.table(per_data[,list(team, PER)], row.names = F, col.names = F, file='../Repast/KiattenMittons/resources/players.csv', sep=',', quote=F)
