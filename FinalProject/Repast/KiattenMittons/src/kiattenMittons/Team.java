@@ -6,9 +6,7 @@ import java.util.List;
 
 import kiattenMittons.Helpers.WeightScaler;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
-import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.util.ContextUtils;
 
 public class Team {
 	private TeamName teamName;
@@ -114,52 +112,56 @@ public class Team {
 		return sum;
 	}
 
-	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH)
-	public void finalizeYear() {
-		recordPowerIndex();
-		updatePlayers();
-	}
-
 	@ScheduledMethod(start = 0, interval = LeagueBuilder.YEAR_LENGTH / LeagueBuilder.NUM_OFFSEASON_WEEKS)
 	public void makeOffersToTopFreeAgents() {
 
 	}
 
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 0.0)
 	public void recordPowerIndex() {
 		powerIndices.add(getPowerIndex());
 	}
 
-	public void updatePlayers() {
-		// determine which players are retiring
-		ArrayList<Player> playersToRemove = new ArrayList<Player>();
-		for (Player player: players) {
-			player.updateYearsLeft();
-			int yearsLeft = player.getYearsLeft();
-			if (yearsLeft <= 0) {
-				playersToRemove.add(player);
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 3.0)
+	public void updateRoster() {
+		// determine which players retired or are free agents
+		ArrayList<Player> removedPlayers = new ArrayList<Player>();
+		for (Player p : players) {
+			if (0 == p.getYearsLeft() || (null == p.getContract() ? false : null == p.getContract().getSignedTeam())) {
+				removedPlayers.add(p);
 			}
 		}
 
-		// remove retired players from the team and simulation
-		for (Player player: playersToRemove) {
-			players.remove(player);
-			Context<Object> context = ContextUtils.getContext(player);
-			context.remove(player);
+		// remove the players from the team's roster
+		for (Player p : removedPlayers) {
+			players.remove(p);
 		}
+	}
 
-		// determine which players' contracts are up
-		playersToRemove = new ArrayList<Player>();
-		for (Player player: players) {
-			player.updateContract();
-			if (null != player.getContract() && (null == player.getContract().getSignedTeam())) {
-				playersToRemove.add(player);
-			}
+	public void makeOffers() {
+		// Need to determine which players to offer.
+		ArrayList<Player> playersToOffer = determinePlayersToOffer();
+		for (Player player: playersToOffer) {
+			Contract contract = determineOfferForPlayer(player);
+			player.addOffer(contract);
 		}
+	}
 
-		// remove free agent players from the team; add them to the Free Agent list
-		for (Player player: playersToRemove) {
-			players.remove(player);
-			// league.freeAgents.add(player);
-		}
+	private ArrayList<Player> determinePlayersToOffer() {
+		// TODO: Something real please.
+		return new ArrayList<Player>();
+	}
+
+	private Contract determineOfferForPlayer(Player player) {
+		// TODO: Something real please.
+		return new Contract();
+	}
+
+	public void registerAcceptedOffer(Player player, Contract offer) {
+		// TODO: Something real please.
+	}
+
+	public void registerDeclinedOffer(Player player, Contract offer) {
+		// TODO: Something real please.
 	}
 }

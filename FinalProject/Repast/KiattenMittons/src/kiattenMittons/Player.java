@@ -1,15 +1,19 @@
 package kiattenMittons;
 
-import java.util.Comparator;
+import java.util.*;
 
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 import kiattenMittons.Contract;
+import repast.simphony.context.Context;
+import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.util.ContextUtils;
 
 public class Player {
 	private double per;
 	private TeamName teamName;
 	private int yearsLeft;
 	private Contract contract;
+	private ArrayList<Contract> offers;
 	
 	private static final double[] COEFFICIENTS = {
 		12671051.1, -3003452.8, 217568.5, -3483.8
@@ -37,6 +41,7 @@ public class Player {
 		this.teamName = teamName;
 		this.yearsLeft = yearsLeft;
 		this.contract = new Contract();
+		this.offers = new ArrayList<Contract>();
 	}
 	
 	/**
@@ -74,14 +79,19 @@ public class Player {
 		this.yearsLeft = years;
 	}
 
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 1.0)
 	public void updateYearsLeft() {
-		--this.yearsLeft;
+		if (0 == --this.yearsLeft) {
+			Context<Object> context = ContextUtils.getContext(this);
+ 			context.remove(this);
+		}
 	}
 	
 	public Contract getContract() {
 		return this.contract;
 	}
 	
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 2.0)
 	public void updateContract() {
 		if (null != this.contract) {
 			this.contract.updateYearsRemaining();
@@ -114,5 +124,40 @@ public class Player {
 		}
 		
 		return value;
+	}
+	
+	public void addOffer(Contract contract) {
+		this.offers.add(contract);
+	}
+
+	public void evaluateOffers() {
+		Map<Integer, Contract> contractUtility = new HashMap<Integer, Contract>();
+		for (Contract offer: offers) {
+			Integer key = evaluateOffer(offer);
+			contractUtility.put(key, offer);
+		}
+		SortedSet<Integer> keys = new TreeSet<Integer>(contractUtility.keySet());
+		Contract bestOffer = contractUtility.get(keys.first());
+		boolean accept = acceptOffer(bestOffer);
+		if (accept) {
+			bestOffer.getSignedTeam().registerAcceptedOffer(this, bestOffer);
+		}
+		else {
+			bestOffer.getSignedTeam().registerDeclinedOffer(this, bestOffer);
+		}
+	}
+
+	private Integer evaluateOffer(Contract offer) {
+		// TODO: Do something real.
+		return 0;
+	}
+
+	public void endOffseason() {
+		this.offers = new ArrayList<Contract>();
+	}
+
+	private boolean acceptOffer(Contract offer) {
+		// TODO: Determine if offer is good enough.
+		return true;
 	}
 }

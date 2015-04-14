@@ -17,9 +17,7 @@ package kiattenMittons
  * Import the needed packages.
  *
  */
-import java.io.*
 import java.math.*
-import java.util.*
 import javax.measure.unit.*
 import org.jscience.mathematics.number.*
 import org.jscience.mathematics.vector.*
