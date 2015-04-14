@@ -162,4 +162,31 @@ public class Team {
 			// league.freeAgents.add(player);
 		}
 	}
+
+	public void makeOffers() {
+		// Need to determine which players to offer.
+		ArrayList<Player> playersToOffer = determinePlayersToOffer();
+		for (Player player: playersToOffer) {
+			Contract contract = determineOfferForPlayer(player);
+			player.addOffer(contract);
+		}
+	}
+
+	private ArrayList<Player> determinePlayersToOffer() {
+		// TODO: Something real please.
+		return new ArrayList<Player>();
+	}
+
+	private Contract determineOfferForPlayer(Player player) {
+		// TODO: Something real please.
+		return new Contract();
+	}
+
+	public void registerAcceptedOffer(Player player, Contract offer) {
+		// TODO: Something real please.
+	}
+
+	public void registerDeclinedOffer(Player player, Contract offer) {
+		// TODO: Something real please.
+	}
 }

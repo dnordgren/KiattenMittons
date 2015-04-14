@@ -1,6 +1,6 @@
 package kiattenMittons;
 
-import java.util.Comparator;
+import java.util.*;
 
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 import kiattenMittons.Contract;
@@ -10,6 +10,7 @@ public class Player {
 	private TeamName teamName;
 	private int yearsLeft;
 	private Contract contract;
+	private ArrayList<Contract> offers;
 	
 	//TODO: make sure that this is sorting correctly
 	public static Comparator<Player> comparator = new Comparator<Player>() {
@@ -33,6 +34,7 @@ public class Player {
 		this.teamName = teamName;
 		this.yearsLeft = yearsLeft;
 		this.contract = contract;
+		this.offers = new ArrayList<Contract>();
 	}
 	
 	/**
@@ -83,4 +85,39 @@ public class Player {
 	public void signWithTeam(Team team, int years, double value) {
         this.contract.signWithTeam(team, years, value);
     }
+
+	public void addOffer(Contract contract) {
+		this.offers.add(contract);
+	}
+
+	public void evaluateOffers() {
+		Map<Integer, Contract> contractUtility = new HashMap<Integer, Contract>();
+		for (Contract offer: offers) {
+			Integer key = evaluateOffer(offer);
+			contractUtility.put(key, offer);
+		}
+		SortedSet<Integer> keys = new TreeSet<Integer>(contractUtility.keySet());
+		Contract bestOffer = contractUtility.get(keys.first());
+		boolean accept = acceptOffer(bestOffer);
+		if (accept) {
+			bestOffer.getSignedTeam().registerAcceptedOffer(this, bestOffer);
+		}
+		else {
+			bestOffer.getSignedTeam().registerDeclinedOffer(this, bestOffer);
+		}
+	}
+
+	private Integer evaluateOffer(Contract offer) {
+		// TODO: Do something real.
+		return 0;
+	}
+
+	public void endOffseason() {
+		this.offers = new ArrayList<Contract>();
+	}
+
+	private boolean acceptOffer(Contract offer) {
+		// TODO: Determine if offer is good enough.
+		return true;
+	}
 }
