@@ -31,3 +31,16 @@ salary_per <- data.table(salary=salary_table$SALARY[1:nrow(players)], per=player
 # sorted pers vs sorted salaries
 g <- ggplot(salary_per, aes(x=per, y=salary)) + geom_point()
 print(g)
+
+# lm with polynomial factors is pretty significant
+salary_model <- lm(salary~per+I(per^2)+I(per^3), data=salary_per)
+print(summary(salary_model))
+
+
+per_range <- seq(min(salary_per$per), max(salary_per$per), by=.1)
+
+line_data <- data.frame(per=per_range)
+line_data$salary <- predict(salary_model, newdata=line_data)
+fitted_g <- ggplot(salary_per, aes(x=per, y=salary)) + geom_point() +
+	geom_line(data=line_data, aes(x=per, y=salary))
+print(fitted_g)
