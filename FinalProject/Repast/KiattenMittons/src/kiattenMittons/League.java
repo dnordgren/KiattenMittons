@@ -2,6 +2,8 @@ package kiattenMittons;
 
 import java.util.List;
 
+import repast.simphony.engine.schedule.ScheduledMethod;
+
 public class League {
 	private List<Team> teams;
 	
@@ -20,5 +22,10 @@ public class League {
 			sum += tm.getParityContribution();
 		}
 		return sum;
+	}
+	
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 4.0)
+	public void draft() {
+		
 	}
 }
