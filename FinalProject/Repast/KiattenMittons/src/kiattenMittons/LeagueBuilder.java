@@ -30,9 +30,12 @@ public class LeagueBuilder implements ContextBuilder<Object> {
 			teamNameDictionary.put(teamName, team);
 		}
 
+		//adds each player to its team, and signs the contract
 		for (Player player: initialPlayers) {
 			TeamName teamName = player.getTeamName();
 			Team team = teamNameDictionary.get(teamName);
+			int contractLength = PlayerGenerator.generateSeedContractLength();
+			player.signWithTeam(team, contractLength, 0);
 			team.addPlayer(player);
 		}
 

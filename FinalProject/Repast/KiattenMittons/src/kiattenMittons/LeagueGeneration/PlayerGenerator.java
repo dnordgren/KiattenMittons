@@ -13,6 +13,7 @@ public class PlayerGenerator {
 	private static final int NUM_PICKS = 60; //the number of picks in the draft	
 	private static Random randomGenerator = new Random();
 	private static List<Player> players = PlayerFileReader.GeneratePlayers();
+	private static final int[] CONTRACT_LENGTHS = {2, 3, 4};
 	
 	/*
 	 * approximated from an exponential distribution with rate = 1/6 
@@ -27,7 +28,7 @@ public class PlayerGenerator {
 	
 	/**
 	 * Make a shallow copy of the initial players singleton,
-	 * and add in the initial years left and contracts
+	 * and add in the initial years left
 	 * @return Initial players
 	 */
 	public static List<Player> generatePlayers() {
@@ -38,6 +39,18 @@ public class PlayerGenerator {
 		}
 		
 		return newPlayers;
+	}
+	
+	/**
+	 * Generates a random contract length to give to the
+	 * initial agents in the NBA, based on the equilibrium
+	 * proportions that would exist in the NBA if new 
+	 * contracts are 2, 3, or 4 years with equal probability of each
+	 * @return contract length
+	 */
+	public static int generateSeedContractLength() {
+		int index = randomGenerator.nextInt(CONTRACT_LENGTHS.length);
+		return CONTRACT_LENGTHS[index];
 	}
 	
 	/**
