@@ -13,7 +13,7 @@ public class PlayerGenerator {
 	private static List<Player> players = PlayerFileReader.GeneratePlayers();
 	private static final int[] INIT_CONTRACT_LENGTHS = {1, 2, 3, 4};
 	private static final double[] INIT_CONTRACT_WEIGHTS = {1.0/3.0, 1.0/3.0, 2.0/9.0, 1.0/9.0};
-	private static final int DRAFT_SIZE = 60;
+	private static final int DRAFT_SIZE = 90; 
 	
 	/*
 	 * approximated from an exponential distribution with rate = 1/6 
@@ -78,10 +78,9 @@ public class PlayerGenerator {
 	}
 	
 	/**
-	 * The "draft" will simply be adding 60 (2 "rounds" for 
-	 * each team) players to the pool as free agents
-	 * based on the original distribution of ratings.
-	 * @return
+	 * The "draft" will simply be adding players to the pool 
+	 * as free agents based on the original distribution of ratings.
+	 * @return List of randomly sampled Players
 	 */
 	public static List<Player> generateDraftClass() {
 		List<Player> draftClass = new ArrayList<Player>();
