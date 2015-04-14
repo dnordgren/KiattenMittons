@@ -87,15 +87,26 @@ public class Team {
 	 */
 	public double getParityContribution() {
 		
+		//if no powerIndices have been saved, parity is not meaningful, so return 0
 		if(powerIndices.size() == 0) {
 			return 0;
 		}
 		
+		/*
+		 * either iterating through all of the weights, or all of the pairs of
+		 * power indices (of which there are .size()-1), 
+		 * whichever there are fewer of 
+		 */
 		int size = Math.min(powerIndices.size() - 1, YEAR_WEIGHTS.length);
 		double[] scaledWeights = WeightScaler.scaleWeights(YEAR_WEIGHTS, size);
 		
+		/*
+		 * summing the absolute differences between the most recent year and
+		 * the previous years (up to 7), multiplied by a weight 
+		 */
 		double sum = 0, diff;
 		for(int i = 0; i < size - 1; i++) {
+			//difference between first most recent power ranking, and (i+1) seasons back 
 			diff = Math.abs(powerIndices.get(size - 1) - powerIndices.get(size - (2 + i)));
 			sum += diff * scaledWeights[i];
 		}
