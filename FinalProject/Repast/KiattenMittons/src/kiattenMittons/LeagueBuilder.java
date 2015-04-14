@@ -11,6 +11,7 @@ import repast.simphony.dataLoader.ContextBuilder;
 public class LeagueBuilder implements ContextBuilder<Object> {
 	
 	public static final int YEAR_LENGTH = 20;
+	public static final int NUM_OFFSEASON_WEEKS = 10;
 
 	public Context<Object> build(Context<Object> context) {
 

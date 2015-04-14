@@ -103,14 +103,23 @@ public class Team {
 		return sum;
 	}
 
-	// TODO: we might want to combine this with the method for removing old players so we can be sure of the order of execution 
 	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH)
+	public void finalizeYear() {
+		recordPowerIndex();
+		updatePlayers();
+	}
+
+	@ScheduledMethod(start = 0, interval = LeagueBuilder.YEAR_LENGTH / LeagueBuilder.NUM_OFFSEASON_WEEKS)
+	public void makeOffersToTopFreeAgents() {
+
+	}
+
 	public void recordPowerIndex() {
 		powerIndices.add(getPowerIndex());
 	}
-	
-	@ScheduledMethod(start = 1, interval = 1)
-	public void doSomething() {
+
+	public void updatePlayers() {
+		// determine which players are retiring
 		ArrayList<Player> playersToRemove = new ArrayList<Player>();
 		for (Player player: players) {
 			player.updateYearsLeft();
@@ -120,10 +129,26 @@ public class Team {
 			}
 		}
 
+		// remove retired players from the team and simulation
 		for (Player player: playersToRemove) {
 			players.remove(player);
 			Context<Object> context = ContextUtils.getContext(player);
 			context.remove(player);
+		}
+
+		// determine which players' contracts are up
+		playersToRemove = new ArrayList<Player>();
+		for (Player player: players) {
+			player.updateContract();
+			if (null == player.getContract().getSignedTeam()) {
+				playersToRemove.add(player);
+			}
+		}
+
+		// remove free agent players from the team; add them to the Free Agent list
+		for (Player player: playersToRemove) {
+			players.remove(player);
+			// league.freeAgents.add(player);
 		}
 	}
 }
