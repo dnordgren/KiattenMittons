@@ -23,7 +23,7 @@ public class TestTeam extends TestCase {
 	{
 	    Team team = new Team(TeamGenerator.TeamName.ATL);
 	    
-	    team.addPlayer(new Player(1, TeamGenerator.TeamName.ATL, 100, null));
+	    team.addPlayer(new Player(1, TeamGenerator.TeamName.ATL, 100));
 	    team.recordPowerIndex();
 	    
 	    double parity = team.getParityContribution();
@@ -34,11 +34,11 @@ public class TestTeam extends TestCase {
 	{
 	    Team team = new Team(TeamGenerator.TeamName.ATL);
 	    
-	    team.addPlayer(new Player(1, TeamGenerator.TeamName.ATL, 100, null));
+	    team.addPlayer(new Player(1, TeamGenerator.TeamName.ATL, 100));
 	    team.recordPowerIndex();
-	    team.addPlayer(new Player(1, TeamGenerator.TeamName.ATL, 100, null));
+	    team.addPlayer(new Player(1, TeamGenerator.TeamName.ATL, 100));
 	    team.recordPowerIndex();
-	    team.addPlayer(new Player(1, TeamGenerator.TeamName.ATL, 100, null));
+	    team.addPlayer(new Player(1, TeamGenerator.TeamName.ATL, 100));
 	    team.recordPowerIndex();
 	    
 	    double parity = team.getParityContribution();

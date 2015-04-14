@@ -28,11 +28,11 @@ public class Player {
 	 * for setting up the initial league
 	 * @param per
 	 */
-	public Player(double per, TeamName teamName, int yearsLeft, Contract contract) {
+	public Player(double per, TeamName teamName, int yearsLeft) {
 		this.per = per;
 		this.teamName = teamName;
 		this.yearsLeft = yearsLeft;
-		this.contract = contract;
+		this.contract = new Contract();
 	}
 	
 	/**
@@ -84,7 +84,11 @@ public class Player {
 		}
 	}
 	
-	public void signWithTeam(Team team, int years, double value) {
-        this.contract.signWithTeam(team, years, value);
+	public void signWithTeam(Team team, int years, double value) throws Exception{
+		if(this.contract.getSignedTeam() == null) {			
+			this.contract.signWithTeam(team, years, value);
+		} else {
+			throw new Exception("Attempting to sign a player with an existing contract");
+		}
     }
 }
