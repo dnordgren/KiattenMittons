@@ -65,6 +65,10 @@ public class Player {
 	public int getYearsLeft() {
 		return this.yearsLeft;
 	}
+	
+	public void setYearsLeft(int years) {
+		this.yearsLeft = years;
+	}
 
 	public void updateYearsLeft() {
 		--this.yearsLeft;

@@ -14,11 +14,30 @@ public class PlayerGenerator {
 	private static Random randomGenerator = new Random();
 	private static List<Player> players = PlayerFileReader.GeneratePlayers();
 	
+	/*
+	 * approximated from an exponential distribution with rate = 1/6 
+	 * to maintain a relatively constant number of players in the league
+	 */
+	private static final double[] YEAR_WEIGHTS = {
+		0.166666667, 0.141080287, 0.119421885, 0.101088443, 0.085569520,
+		0.072433035, 0.061313240, 0.051900537, 0.043932856, 0.037188360,
+		0.031479267, 0.026646624, 0.022555881, 0.019093141, 0.016161995,
+		0.013680833, 0.011580575, 0.009802745, 0.008297845, 0.007023974
+	};
+	
 	/**
-	 * @return Shallow copy of players arraylist
+	 * Make a shallow copy of the initial players singleton,
+	 * and add in the initial years left and contracts
+	 * @return Initial players
 	 */
 	public static List<Player> generatePlayers() {
-		return new ArrayList<Player>(players);
+		List<Player> newPlayers = new ArrayList<Player>(players);
+		
+		for(Player player : newPlayers) {
+			player.setYearsLeft(generateYearsLeft());
+		}
+		
+		return newPlayers;
 	}
 	
 	/**
@@ -50,5 +69,24 @@ public class PlayerGenerator {
 	private Player samplePlayer() {
 		int index = randomGenerator.nextInt(players.size());
 		return players.get(index);
+	}
+	
+	/**
+	 * Randomly select a number of years remaining
+	 * based on the set of weights defined
+	 * @return
+	 */
+	private static int generateYearsLeft() {
+		double generated = randomGenerator.nextDouble();
+		
+		double sum = 0;
+		for(int i = 0; i < YEAR_WEIGHTS.length; i++) {
+			sum += YEAR_WEIGHTS[i];
+			if(sum > generated) {
+				return (i + 1);
+			}
+		}
+		//if nothing was matched, it's the last year
+		return YEAR_WEIGHTS.length - 1;
 	}
 }
