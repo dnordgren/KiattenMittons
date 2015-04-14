@@ -11,6 +11,10 @@ public class Player {
 	private int yearsLeft;
 	private Contract contract;
 	
+	private static final double[] COEFFICIENTS = {
+		12671051.1, -3003452.8, 217568.5, -3483.8
+	};
+	
 	//TODO: make sure that this is sorting correctly
 	public static Comparator<Player> comparator = new Comparator<Player>() {
 		public int compare(Player p1, Player p2) {
@@ -91,4 +95,24 @@ public class Player {
 			throw new Exception("Attempting to sign a player with an existing contract");
 		}
     }
+	
+	/**
+	 * Based on a function fit on current NBA player PER
+	 * and salary data, determine the expected value
+	 * of this NBA player
+	 * @return
+	 */
+	public double getPerBasedValue() {
+		double value = 0;
+		
+		/*
+		 * the fitted function is as follows:
+		 * value = c[0] + c[1] * per + c[2] * per^2 + c[3] * per^3
+		 */
+		for(int i = 0; i < COEFFICIENTS.length; i++) {
+			value += COEFFICIENTS[i] * Math.pow(per, i);
+		}
+		
+		return value;
+	}
 }
