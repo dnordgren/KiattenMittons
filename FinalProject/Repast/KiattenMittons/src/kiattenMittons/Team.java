@@ -127,7 +127,7 @@ public class Team {
 		// determine which players retired or are free agents
 		ArrayList<Player> removedPlayers = new ArrayList<Player>();
 		for (Player p : players) {
-			if (0 == p.getYearsLeft() || null == p.getContract().getSignedTeam()) {
+			if (0 == p.getYearsLeft() || (null == p.getContract() ? false : null == p.getContract().getSignedTeam())) {
 				removedPlayers.add(p);
 			}
 		}
