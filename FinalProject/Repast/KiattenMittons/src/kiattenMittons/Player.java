@@ -83,7 +83,9 @@ public class Player {
 	
 	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 2.0)
 	public void updateContract() {
-		this.contract.updateYearsRemaining();
+		if (null != this.contract) {
+			this.contract.updateYearsRemaining();
+		}
 	}
 	
 	public void signWithTeam(Team team, int years, double value) {

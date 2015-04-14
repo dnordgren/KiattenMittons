@@ -56,6 +56,6 @@ public class PlayerFileReader {
 		Random rn = new Random();
 		int yearsLeft = rn.nextInt(10) + 1;
 		
-		return new Player(per, teamName, yearsLeft);
+		return new Player(per, teamName, yearsLeft, null);
 	}
 }

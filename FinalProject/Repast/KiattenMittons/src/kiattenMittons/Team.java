@@ -131,7 +131,7 @@ public class Team {
 				removedPlayers.add(p);
 			}
 		}
-		
+
 		// remove the players from the team's roster
 		for (Player p : removedPlayers) {
 			players.remove(p);
