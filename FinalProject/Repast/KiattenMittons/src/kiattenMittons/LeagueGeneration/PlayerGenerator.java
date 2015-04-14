@@ -9,7 +9,6 @@ import kiattenMittons.Helpers.WeightedProbability;
 
 public class PlayerGenerator {
 
-	private static final int NUM_PICKS = 60; //the number of picks in the draft	
 	private static Random randomGenerator = new Random();
 	private static List<Player> players = PlayerFileReader.GeneratePlayers();
 	private static final int[] INIT_CONTRACT_LENGTHS = {1, 2, 3, 4};
