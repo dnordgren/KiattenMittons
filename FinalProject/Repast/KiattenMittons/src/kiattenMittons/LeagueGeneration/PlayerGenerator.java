@@ -1,13 +1,11 @@
 package kiattenMittons.LeagueGeneration;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import kiattenMittons.Player;
 import kiattenMittons.Helpers.WeightedProbability;
-import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 
 public class PlayerGenerator {
 
@@ -16,6 +14,7 @@ public class PlayerGenerator {
 	private static List<Player> players = PlayerFileReader.GeneratePlayers();
 	private static final int[] INIT_CONTRACT_LENGTHS = {1, 2, 3, 4};
 	private static final double[] INIT_CONTRACT_WEIGHTS = {1.0/3.0, 1.0/3.0, 2.0/9.0, 1.0/9.0};
+	private static final int DRAFT_SIZE = 60;
 	
 	/*
 	 * approximated from an exponential distribution with rate = 1/6 
@@ -56,34 +55,17 @@ public class PlayerGenerator {
 	}
 	
 	/**
-	 * Simulates a draft pick by randomly generating a draft and
-	 * giving the player the corresponding pick in that draft.
-	 * 
-	 * Doing this as opposed to selecting from one random draft to
-	 * allow the exact order of player skills to be random
-	 * 
-	 * @param teamName
-	 * @param pick
-	 * @return
+	 * Samples a player at random, makes a copy, and sets up
+	 * some initial values
+	 * @return a random Player based on the current NBA distribution
 	 */
-	public Player draftPlayer(TeamName teamName, int pick) {
-		List<Player> playerSample = new ArrayList<Player>();
-		
-		for(int i = 0; i < NUM_PICKS; i++) {
-			playerSample.add(samplePlayer());
-		}
-		
-		Collections.sort(playerSample, Player.comparator);
-		
-		Player draftedPlayer = playerSample.get(pick - 1);
-		draftedPlayer.setTeamName(teamName);
-		
-		return new Player(draftedPlayer);
-	}
-	
 	private Player samplePlayer() {
 		int index = randomGenerator.nextInt(players.size());
-		return players.get(index);
+		
+		Player sampled = players.get(index);
+		sampled.setYearsLeft(generateYearsLeft());
+		
+		return new Player(sampled);
 	}
 	
 	/**
@@ -94,5 +76,21 @@ public class PlayerGenerator {
 	private static int generateYearsLeft() {
 		//returning + 1 since we want the range to start at 1
 		return WeightedProbability.weightedSelect(YEAR_WEIGHTS) + 1;
+	}
+	
+	/**
+	 * The "draft" will simply be adding 60 (2 "rounds" for 
+	 * each team) players to the pool as free agents
+	 * based on the original distribution of ratings.
+	 * @return
+	 */
+	public List<Player> generateDraftClass() {
+		List<Player> draftClass = new ArrayList<Player>();
+		
+		for(int i = 0; i < DRAFT_SIZE; i++) {
+			draftClass.add(samplePlayer());
+		}
+		
+		return draftClass;
 	}
 }
