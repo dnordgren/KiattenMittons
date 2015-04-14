@@ -151,7 +151,7 @@ public class Team {
 		playersToRemove = new ArrayList<Player>();
 		for (Player player: players) {
 			player.updateContract();
-			if (null == player.getContract().getSignedTeam()) {
+			if (null != player.getContract() && (null == player.getContract().getSignedTeam())) {
 				playersToRemove.add(player);
 			}
 		}

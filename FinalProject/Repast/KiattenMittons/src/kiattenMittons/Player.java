@@ -75,7 +75,9 @@ public class Player {
 	}
 	
 	public void updateContract() {
-		this.contract.updateYearsRemaining();
+		if (null != this.contract) {
+			this.contract.updateYearsRemaining();
+		}
 	}
 	
 	public void signWithTeam(Team team, int years, double value) {
