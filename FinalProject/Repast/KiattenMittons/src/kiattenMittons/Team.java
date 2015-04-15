@@ -8,6 +8,7 @@ import java.util.Random;
 import kiattenMittons.Helpers.ProspectivePlayer;
 import kiattenMittons.Helpers.WeightScaler;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
@@ -221,8 +222,8 @@ public class Team {
 		}
 
 		Random random = new Random();
-		// discount the offer up to 20 percent
-		double offerDiscount = (random.nextDouble() / 5) + 0.8;
+		
+		double offerDiscount = (random.nextDouble() / 5) + 0.8;//getOfferDiscountFactor();//
 		double topProspectExpectedReserve = topProspect.getPlayer().getPerBasedValue() * offerDiscount;
 
 		// verify that we're playing the least best prospect at least the minimum salary
@@ -240,6 +241,15 @@ public class Team {
 			determineOfferForPlayers(prospectivePlayers);
 		}
 	}
+
+	/**
+	 * 
+	 * @return
+	 */
+//	private double getOfferDiscountFactor() {
+//		(Double)RunEnvironment.getInstance().getParameters().getValue("minIndividualContractSize");
+//		return 0;
+//	}
 
 	public void registerAcceptedOffer(Player player, Contract offer) {
 		players.add(player);
