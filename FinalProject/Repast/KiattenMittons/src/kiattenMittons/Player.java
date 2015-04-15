@@ -152,6 +152,8 @@ public class Player {
 			value += COEFFICIENTS[i] * Math.pow(per, i);
 		}
 		
+		value = Math.min(value, League.CONTRACT_MAX);
+		
 		return value;
 	}
 	
