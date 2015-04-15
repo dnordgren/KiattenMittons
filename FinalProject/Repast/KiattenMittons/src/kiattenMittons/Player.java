@@ -135,14 +135,11 @@ public class Player {
 		this.offers.add(contract);
 	}
 
+	/**
+	 * Accept the best offer if it is good enough
+	 */
 	public void evaluateOffers() {
-		Map<Integer, Contract> contractUtility = new HashMap<Integer, Contract>();
-		for (Contract offer: offers) {
-			Integer key = evaluateOffer(offer);
-			contractUtility.put(key, offer);
-		}
-		SortedSet<Integer> keys = new TreeSet<Integer>(contractUtility.keySet());
-		Contract bestOffer = contractUtility.get(keys.first());
+		Contract bestOffer = findBestOffer();
 		boolean accept = acceptOffer(bestOffer);
 		if (accept) {
 			bestOffer.getSignedTeam().registerAcceptedOffer(this, bestOffer);
@@ -150,6 +147,25 @@ public class Player {
 		else {
 			bestOffer.getSignedTeam().registerDeclinedOffer(this, bestOffer);
 		}
+	}
+	
+	/**
+	 * Compute the values of each offer, and return the one
+	 * with the highest value to the player
+	 * @return highest valued offer
+	 */
+	private Contract findBestOffer() {
+		Contract bestOffer = offers.get(0), currentOffer;
+		double bestOfferValue = evaluateOffer(bestOffer), currentOfferValue;
+		for(int i = 1; i < offers.size(); i++) {
+			currentOffer = offers.get(i);
+			currentOfferValue = evaluateOffer(currentOffer);
+			if(currentOfferValue > bestOfferValue) {
+				bestOfferValue = currentOfferValue;
+				bestOffer = currentOffer;
+			}
+		}
+		return bestOffer;	
 	}
 
 	/**
