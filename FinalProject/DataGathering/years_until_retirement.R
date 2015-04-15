@@ -7,3 +7,4 @@ for(i in 1:200) {
 	props <- c(props[-1], 0)+floor(og*90)
 }
 print(sum(props))
+print(og/sum(og))
