@@ -56,6 +56,8 @@ public class Player {
 		this.yearsLeft = player.yearsLeft;
 		this.teamName = player.teamName;
 		this.contract = player.contract;
+		this.offers = new ArrayList<Contract>();
+		this.teamPreferenceFactor = player.teamPreferenceFactor;
 	}
 	
 	/**
