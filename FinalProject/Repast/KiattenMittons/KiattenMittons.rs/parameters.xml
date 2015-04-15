@@ -6,12 +6,6 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 
 		/>
-				<parameter name="percentTeamsLongContracts" displayName="Percentage of Teams that Offer Longer Contracts" type="double"
-						defaultValue="0.2"
-						isReadOnly="false"
-						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
-
-		/>
 				<parameter name="minIndividualContractSize" displayName="Min Individual Contract Size" type="double"
 						defaultValue="507336.0"
 						isReadOnly="false"
@@ -28,6 +22,12 @@
 						defaultValue="6.3065E7"
 						isReadOnly="false"
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+
+		/>
+				<parameter name="contractAdjustment" displayName="Contract Adjustment" type="int"
+						defaultValue="0"
+						isReadOnly="false"
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 
 		/>
 				<parameter name="teamPreferenceFactor" displayName="Team Preference Factor" type="double"

@@ -6,8 +6,8 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 
 		/>
-				<parameter name="percentTeamsLongContracts" displayName="Percentage of Teams that Offer Longer Contracts" type="double"
-						defaultValue="0.2"
+				<parameter name="minIndividualContractSize" displayName="Min Individual Contract Size" type="double"
+						defaultValue="507336.0"
 						isReadOnly="false"
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 
@@ -37,5 +37,3 @@
 
 		/>
 		</parameters>
-
-

@@ -13,6 +13,8 @@ public class PlayerGenerator {
 	private static Random randomGenerator = new Random();
 	private static List<Player> players = null;
 	private static final int[] INIT_CONTRACT_LENGTHS = {1, 2, 3, 4};
+	private static final int[] CONTRACT_LENGTHS = {3, 4, 5};
+	private static final double[] CONTRACT_WEIGHTS = {1.0/3.0, 1.0/3.0, 1.0/3.0};
 	private static final double[] INIT_CONTRACT_WEIGHTS = {1.0/3.0, 1.0/3.0, 2.0/9.0, 1.0/9.0};
 	private static final int DRAFT_SIZE = 90;
 	private static final double TEAM_PREFERENCE_MEAN = teamPreferenceMean();
@@ -79,7 +81,7 @@ public class PlayerGenerator {
 		
 		return new Player(sampled);
 	}
-	
+
 	/**
 	 * Randomly select a number of years remaining
 	 * based on the set of weights defined
@@ -88,6 +90,11 @@ public class PlayerGenerator {
 	public static int generateYearsLeft() {
 		//returning + 1 since we want the range to start at 1
 		return WeightedProbability.weightedSelect(YEAR_WEIGHTS) + 1;
+	}
+
+	public static int generateContractYearsLeft() {
+		int index = WeightedProbability.weightedSelect(CONTRACT_WEIGHTS);
+		return CONTRACT_LENGTHS[index] + (Integer)RunEnvironment.getInstance().getParameters().getValue("contractAdjustment");
 	}
 	
 	/**
