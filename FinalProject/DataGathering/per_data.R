@@ -28,4 +28,14 @@ per_data <- per_data[order(PER, decreasing = T)]
 per_data[,rank:=order(PER, decreasing = T), by=team]
 per_data <- per_data[rank <= 15]
 
+
+# semimanually adding back players that were traded to Boston
+# since they were short of the 13 player minimum without them
+traded <- per_data[grep('BOS/', PLAYER)][1:3]
+traded[,team:="BOS"]
+detroit <- per_data[grep('DET/', PLAYER)][1]
+detroit[,team:="DET"]
+per_data <- rbind(per_data, traded)
+per_data <- rbind(per_data, detroit)
+
 # write.table(per_data[,list(team, PER)], row.names = F, col.names = F, file='../Repast/KiattenMittons/resources/players.csv', sep=',', quote=F)
