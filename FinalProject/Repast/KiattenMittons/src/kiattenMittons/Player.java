@@ -120,12 +120,8 @@ public class Player {
 		return this.contract;
 	}
 	
-	public void signWithTeam(Team team, int years, double value) throws Exception{
-		if(this.contract.getSignedTeam() == null) {			
-			this.contract.signWithTeam(team, years, value);
-		} else {
-			throw new Exception("Attempting to sign a player with an existing contract");
-		}
+	public void signWithTeam(Team team, int years, double value) {
+		this.contract.signWithTeam(team, years, value);
     }
 	
 	/**
