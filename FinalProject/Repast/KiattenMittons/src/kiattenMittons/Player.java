@@ -2,6 +2,7 @@ package kiattenMittons;
 
 import java.util.*;
 
+import kiattenMittons.LeagueGeneration.PlayerGenerator;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 import kiattenMittons.Contract;
 import repast.simphony.context.Context;
@@ -14,6 +15,8 @@ public class Player {
 	private int yearsLeft;
 	private Contract contract;
 	private ArrayList<Contract> offers;
+	private double teamPreferenceFactor;
+	private double desperationMultiplier;
 	
 	private static final double[] COEFFICIENTS = {
 		12671051.1, -3003452.8, 217568.5, -3483.8
@@ -36,12 +39,14 @@ public class Player {
 	 * for setting up the initial league
 	 * @param per
 	 */
-	public Player(double per, TeamName teamName, int yearsLeft) {
+	public Player(double per, TeamName teamName) {
 		this.per = per;
 		this.teamName = teamName;
-		this.yearsLeft = yearsLeft;
 		this.contract = new Contract();
 		this.offers = new ArrayList<Contract>();
+		this.yearsLeft = PlayerGenerator.generateYearsLeft();
+		this.teamPreferenceFactor = PlayerGenerator.generatePreferenceFactor();
+		this.desperationMultiplier = 1;
 	}
 	
 	/**
@@ -53,6 +58,9 @@ public class Player {
 		this.yearsLeft = player.yearsLeft;
 		this.teamName = player.teamName;
 		this.contract = player.contract;
+		this.offers = new ArrayList<Contract>();
+		this.teamPreferenceFactor = player.teamPreferenceFactor;
+		this.desperationMultiplier = player.desperationMultiplier;
 	}
 	
 	/**
@@ -81,21 +89,36 @@ public class Player {
 
 	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 1.0)
 	public void updateYearsLeft() {
+		//check if they leave the NBA
 		if (0 == --this.yearsLeft) {
 			Context<Object> context = ContextUtils.getContext(this);
  			context.remove(this);
+ 			return;
 		}
+		
+		//update years
+		if (null != this.contract) {
+			this.contract.updateYearsRemaining();
+		}
+		
+		//scale up TPF slightly every year
+		teamPreferenceFactor += (1 - teamPreferenceFactor) * 0.1;
+		
+		//reset desperation multiplier
+		desperationMultiplier = 1;
+	}
+	
+	/**
+	 * Multiplier decreases at each round (will be reset at
+	 * the end of a year).
+	 */
+	@ScheduledMethod(start = 1, interval = 1)
+	public void increaseDesperation() {
+		desperationMultiplier *= .99;
 	}
 	
 	public Contract getContract() {
 		return this.contract;
-	}
-	
-	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 2.0)
-	public void updateContract() {
-		if (null != this.contract) {
-			this.contract.updateYearsRemaining();
-		}
 	}
 	
 	public void signWithTeam(Team team, int years, double value) throws Exception{
@@ -130,14 +153,11 @@ public class Player {
 		this.offers.add(contract);
 	}
 
+	/**
+	 * Accept the best offer if it is good enough
+	 */
 	public void evaluateOffers() {
-		Map<Integer, Contract> contractUtility = new HashMap<Integer, Contract>();
-		for (Contract offer: offers) {
-			Integer key = evaluateOffer(offer);
-			contractUtility.put(key, offer);
-		}
-		SortedSet<Integer> keys = new TreeSet<Integer>(contractUtility.keySet());
-		Contract bestOffer = contractUtility.get(keys.first());
+		Contract bestOffer = findBestOffer();
 		boolean accept = acceptOffer(bestOffer);
 		if (accept) {
 			bestOffer.getSignedTeam().registerAcceptedOffer(this, bestOffer);
@@ -146,18 +166,58 @@ public class Player {
 			bestOffer.getSignedTeam().registerDeclinedOffer(this, bestOffer);
 		}
 	}
+	
+	/**
+	 * Compute the values of each offer, and return the one
+	 * with the highest value to the player
+	 * @return highest valued offer
+	 */
+	private Contract findBestOffer() {
+		Contract bestOffer = offers.get(0), currentOffer;
+		double bestOfferValue = evaluateOffer(bestOffer), currentOfferValue;
+		for(int i = 1; i < offers.size(); i++) {
+			currentOffer = offers.get(i);
+			currentOfferValue = evaluateOffer(currentOffer);
+			if(currentOfferValue > bestOfferValue) {
+				bestOfferValue = currentOfferValue;
+				bestOffer = currentOffer;
+			}
+		}
+		return bestOffer;	
+	}
 
-	private Integer evaluateOffer(Contract offer) {
-		// TODO: Do something real.
-		return 0;
+	/**
+	 * Players evaluate an offer as the combination of its value ($) and 
+	 * the skill of the team offering that contract. Both of the raw values
+	 * are scaled to be between 0 and 1, and then weighted by the Player's
+	 * team preference factor
+	 * @param offer
+	 * @return offer value
+	 */
+	private double evaluateOffer(Contract offer) {
+		//power index is scaled out of 35 to put it on the same scale as $
+		double scaledTeamIndex = offer.getSignedTeam().getPowerIndex() / 35.0;
+		
+		double scaledContractValue = (offer.getValue() - League.CONTRACT_MIN) / 
+				(League.CONTRACT_MAX - League.CONTRACT_MIN);
+		
+		double offerValue = teamPreferenceFactor * scaledTeamIndex + 
+				(1 - teamPreferenceFactor) * scaledContractValue;
+		
+		return offerValue;
 	}
 
 	public void endOffseason() {
 		this.offers = new ArrayList<Contract>();
 	}
 
+	/**
+	 * Checks if an offer is acceptable
+	 * @param offer
+	 * @return true if offer is acceptable
+	 */
 	private boolean acceptOffer(Contract offer) {
-		// TODO: Determine if offer is good enough.
-		return true;
+		double expectedAmount = getPerBasedValue() * desperationMultiplier;
+		return offer.getValue() >= expectedAmount;
 	}
 }

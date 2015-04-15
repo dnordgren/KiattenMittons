@@ -12,6 +12,12 @@
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 
 		/>
+				<parameter name="minIndividualContractSize" displayName="Min Individual Contract Size" type="double"
+						defaultValue="507336.0"
+						isReadOnly="false"
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+
+		/>
 				<parameter name="percentTeamsWillingOverSalaryCap" displayName="Percentage of Teams willing to Exceed Salary Cap" type="double"
 						defaultValue="0.1"
 						isReadOnly="false"
@@ -37,5 +43,3 @@
 
 		/>
 		</parameters>
-
-
