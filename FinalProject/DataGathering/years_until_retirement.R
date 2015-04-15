@@ -7,3 +7,4 @@ for(i in 1:20) {
 	props <- c(props[-1], 0)+og*1/6
 }
 print(sum(props))
+print(og/sum(og))
