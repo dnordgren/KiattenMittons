@@ -4,12 +4,12 @@ import java.util.List;
 
 import kiattenMittons.LeagueGeneration.PlayerGenerator;
 import repast.simphony.context.Context;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.ContextUtils;
 
 public class League {
-	// See http://www.basketball-reference.com/contracts/
-	public static final double SALARY_CAP = 63065000;
+	public static final double SALARY_CAP = (Double)RunEnvironment.getInstance().getParameters().getValue("salaryCap");
 	private List<Team> teams;
 	
 	public League(List<Team> teams) {
