@@ -4,11 +4,11 @@ import java.util.List;
 
 import kiattenMittons.LeagueGeneration.PlayerGenerator;
 import repast.simphony.context.Context;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.ContextUtils;
 
 public class League {
-	
 	/*
 	 * These values are based off of actual min and max values
 	 * for the NBA in 2015.  There are exceptions to these values,
@@ -16,7 +16,7 @@ public class League {
 	 */
 	public static final double CONTRACT_MIN = 507336; 
 	public static final double CONTRACT_MAX = 20644400;
-	
+	public static final double SALARY_CAP = (Double)RunEnvironment.getInstance().getParameters().getValue("salaryCap");
 	private List<Team> teams;
 	
 	public League(List<Team> teams) {
