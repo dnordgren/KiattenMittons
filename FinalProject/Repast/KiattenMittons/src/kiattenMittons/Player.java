@@ -218,6 +218,6 @@ public class Player {
 	 */
 	private boolean acceptOffer(Contract offer) {
 		double expectedAmount = getPerBasedValue() * desperationMultiplier;
-		return offer.getValue() > expectedAmount;
+		return offer.getValue() >= expectedAmount;
 	}
 }
