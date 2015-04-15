@@ -6,6 +6,12 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 
 		/>
+				<parameter name="percentTeamsLongContracts" displayName="Percentage of Teams that Offer Longer Contracts" type="double"
+						defaultValue="0.2"
+						isReadOnly="false"
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+
+		/>
 				<parameter name="percentTeamsWillingOverSalaryCap" displayName="Percentage of Teams willing to Exceed Salary Cap" type="double"
 						defaultValue="0.1"
 						isReadOnly="false"

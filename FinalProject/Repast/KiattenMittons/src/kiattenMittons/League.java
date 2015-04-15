@@ -14,8 +14,8 @@ public class League {
 	 * for the NBA in 2015.  There are exceptions to these values,
 	 * but for simplification, we are ignoring those special cases.  
 	 */
-	public static final double CONTRACT_MIN = 507336; 
-	public static final double CONTRACT_MAX = 20644400;
+	public static final double CONTRACT_MIN = (Double)RunEnvironment.getInstance().getParameters().getValue("minIndividualContractSize"); 
+	public static final double CONTRACT_MAX = (Double)RunEnvironment.getInstance().getParameters().getValue("maxIndividualContractSize");
 	public static final double SALARY_CAP = (Double)RunEnvironment.getInstance().getParameters().getValue("salaryCap");
 	private List<Team> teams;
 	

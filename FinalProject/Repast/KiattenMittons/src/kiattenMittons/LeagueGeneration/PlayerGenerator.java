@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import repast.simphony.engine.environment.RunEnvironment;
 import kiattenMittons.Player;
 import kiattenMittons.Helpers.WeightedProbability;
 
@@ -14,7 +15,7 @@ public class PlayerGenerator {
 	private static final int[] INIT_CONTRACT_LENGTHS = {1, 2, 3, 4};
 	private static final double[] INIT_CONTRACT_WEIGHTS = {1.0/3.0, 1.0/3.0, 2.0/9.0, 1.0/9.0};
 	private static final int DRAFT_SIZE = 90;
-	private static final double TEAM_PREFERENCE_MEAN = .2;
+	private static final double TEAM_PREFERENCE_MEAN = (Double)RunEnvironment.getInstance().getParameters().getValue("teamPreferenceFactor");
 	
 	private static List<Player> getPlayers() {
 		if(players == null) {
