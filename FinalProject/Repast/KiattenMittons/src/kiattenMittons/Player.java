@@ -166,6 +166,9 @@ public class Player {
 	 */
 	@ScheduledMethod(start = 1, interval = 1, priority = 2.0)
 	public void evaluateOffers() {
+		if (offers.size() == 0) {
+			return;
+		}
 		Contract bestOffer = findBestOffer();
 		boolean accept = acceptOffer(bestOffer);
 		if (accept) {
