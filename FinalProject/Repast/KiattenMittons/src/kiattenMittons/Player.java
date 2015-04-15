@@ -86,21 +86,24 @@ public class Player {
 
 	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 1.0)
 	public void updateYearsLeft() {
+		//check if they leave the NBA
 		if (0 == --this.yearsLeft) {
 			Context<Object> context = ContextUtils.getContext(this);
  			context.remove(this);
+ 			return;
 		}
+		
+		//update years
+		if (null != this.contract) {
+			this.contract.updateYearsRemaining();
+		}
+		
+		//scale up TPF slightly every year
+		teamPreferenceFactor += (1 - teamPreferenceFactor) * 0.1;
 	}
 	
 	public Contract getContract() {
 		return this.contract;
-	}
-	
-	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 2.0)
-	public void updateContract() {
-		if (null != this.contract) {
-			this.contract.updateYearsRemaining();
-		}
 	}
 	
 	public void signWithTeam(Team team, int years, double value) throws Exception{
