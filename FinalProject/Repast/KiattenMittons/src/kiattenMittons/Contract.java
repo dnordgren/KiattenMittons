@@ -9,6 +9,12 @@ public class Contract {
     	this.team = null;
     }
     
+    public Contract(Team team, double value, int years) {
+        this.team = team;
+        this.value = value;
+        this.yearsRemaining = years;
+    }
+
     public int getYearsRemaining() {
         return this.yearsRemaining;
     }

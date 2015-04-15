@@ -3,15 +3,13 @@ package kiattenMittons;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import kiattenMittons.Helpers.ProspectivePlayer;
 import kiattenMittons.Helpers.WeightScaler;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
-import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.util.ContextUtils;
-import repast.simphony.util.collections.IndexedIterable;
 
 public class Team {
 	private TeamName teamName;
@@ -165,14 +163,16 @@ public class Team {
 		}
 	}
 
+	@ScheduledMethod(start = 1, interval = 1, priority = 0.0)
 	public void makeOffers() {
+		// TODO magic number
+		if (15 >= players.size()) {
+			return;
+		}
+
 		// Need to determine which players to offer.
 		List<ProspectivePlayer> playersToOffer = determinePlayersToOffer();
-		for (ProspectivePlayer prospectivePlayer: playersToOffer) {
-			Player player = prospectivePlayer.getPlayer();
-			Contract contract = determineOfferForPlayer(player);
-			player.addOffer(contract);
-		}
+		determineOfferForPlayers(playersToOffer);
 	}
 
 	private List<ProspectivePlayer> determinePlayersToOffer() {
@@ -202,18 +202,46 @@ public class Team {
 		return valueWith - valueWithout;
 	}
 
-	private Contract determineOfferForPlayer(Player player) {
-		// TODO: Something real please.
-		// TODO: Make sure to respect the salary cap.
-		return new Contract();
+	private void determineOfferForPlayers(List<ProspectivePlayer> prospectivePlayers) {
+		if (0 == prospectivePlayers.size()) {
+			return;
+		}
+
+		ProspectivePlayer topProspect = prospectivePlayers.get(0);
+		double fundsRemaining = kiattenMittons.League.SALARY_CAP - dollarsSpentThisYear;
+		int spotsRemaining = 15 - players.size();
+
+		double valueAddedByTopPlayers = 0;
+		for (int i = 0; i < spotsRemaining; i++) {
+			valueAddedByTopPlayers += prospectivePlayers.get(i).getValueAdded();
+		}
+
+		// determine offer for most top prospect
+		double topProspectOffer = (topProspect.getValueAdded() / valueAddedByTopPlayers) * fundsRemaining;
+		// offer can't be greater than max salary
+		if (topProspectOffer > kiattenMittons.League.CONTRACT_MAX) {
+			topProspectOffer = kiattenMittons.League.CONTRACT_MAX;
+		}
+
+		Random random = new Random();
+		// discount the offer up to 20 percent
+		double offerDiscount = (random.nextDouble() / 5) + 0.8;
+		double topProspectExpectedReserve = topProspect.getPlayer().getPerBasedValue() * offerDiscount;
+
+		// verify that we're playing the least best prospect at least the minimum salary
+		double worstProspectOffer = (prospectivePlayers.get(spotsRemaining - 1).getValueAdded() / valueAddedByTopPlayers) * fundsRemaining;
+		if (topProspectOffer >= topProspectExpectedReserve &&
+			worstProspectOffer >= kiattenMittons.League.CONTRACT_MIN) {
+			topProspect.getPlayer().addOffer(new Contract(this, topProspectOffer, kiattenMittons.LeagueGeneration.PlayerGenerator.generateYearsLeft()));
+			return;
+		} else {
+			prospectivePlayers.remove(0);
+			determineOfferForPlayers(prospectivePlayers);
+		}
 	}
 
 	public void registerAcceptedOffer(Player player, Contract offer) {
 		players.add(player);
 		dollarsSpentThisYear += offer.getValue();
-	}
-
-	public void registerDeclinedOffer(Player player, Contract offer) {
-		// TODO: Something real please.
 	}
 }

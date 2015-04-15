@@ -111,7 +111,7 @@ public class Player {
 	 * Multiplier decreases at each round (will be reset at
 	 * the end of a year).
 	 */
-	@ScheduledMethod(start = 1, interval = 1)
+	@ScheduledMethod(start = 1, interval = 1, priority = 1.0)
 	public void increaseDesperation() {
 		desperationMultiplier *= .99;
 	}
@@ -155,14 +155,13 @@ public class Player {
 	/**
 	 * Accept the best offer if it is good enough
 	 */
+	@ScheduledMethod(start = 1, interval = 1, priority = 2.0)
 	public void evaluateOffers() {
 		Contract bestOffer = findBestOffer();
 		boolean accept = acceptOffer(bestOffer);
 		if (accept) {
 			bestOffer.getSignedTeam().registerAcceptedOffer(this, bestOffer);
-		}
-		else {
-			bestOffer.getSignedTeam().registerDeclinedOffer(this, bestOffer);
+			this.contract = bestOffer;
 		}
 	}
 	
@@ -217,6 +216,11 @@ public class Player {
 	 */
 	private boolean acceptOffer(Contract offer) {
 		double expectedAmount = getPerBasedValue() * desperationMultiplier;
+		// players can't be worth more than the max contract
+		if (expectedAmount > kiattenMittons.League.CONTRACT_MAX) {
+			expectedAmount = kiattenMittons.League.CONTRACT_MAX;
+		}
+
 		return offer.getValue() >= expectedAmount;
 	}
 }
