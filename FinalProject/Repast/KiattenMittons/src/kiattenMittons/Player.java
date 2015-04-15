@@ -16,6 +16,7 @@ public class Player {
 	private Contract contract;
 	private ArrayList<Contract> offers;
 	private double teamPreferenceFactor;
+	private double desperationMultiplier;
 	
 	private static final double[] COEFFICIENTS = {
 		12671051.1, -3003452.8, 217568.5, -3483.8
@@ -45,6 +46,7 @@ public class Player {
 		this.offers = new ArrayList<Contract>();
 		this.yearsLeft = PlayerGenerator.generateYearsLeft();
 		this.teamPreferenceFactor = PlayerGenerator.generatePreferenceFactor();
+		this.desperationMultiplier = 1;
 	}
 	
 	/**
@@ -58,6 +60,7 @@ public class Player {
 		this.contract = player.contract;
 		this.offers = new ArrayList<Contract>();
 		this.teamPreferenceFactor = player.teamPreferenceFactor;
+		this.desperationMultiplier = player.desperationMultiplier;
 	}
 	
 	/**
@@ -100,6 +103,18 @@ public class Player {
 		
 		//scale up TPF slightly every year
 		teamPreferenceFactor += (1 - teamPreferenceFactor) * 0.1;
+		
+		//reset desperation multiplier
+		desperationMultiplier = 1;
+	}
+	
+	/**
+	 * Multiplier decreases at each round (will be reset at
+	 * the end of a year).
+	 */
+	@ScheduledMethod(start = 1, interval = 1)
+	public void increaseDesperation() {
+		desperationMultiplier *= .99;
 	}
 	
 	public Contract getContract() {
@@ -196,8 +211,13 @@ public class Player {
 		this.offers = new ArrayList<Contract>();
 	}
 
+	/**
+	 * Checks if an offer is acceptable
+	 * @param offer
+	 * @return true if offer is acceptable
+	 */
 	private boolean acceptOffer(Contract offer) {
-		// TODO: Determine if offer is good enough.
-		return true;
+		double expectedAmount = getPerBasedValue() * desperationMultiplier;
+		return offer.getValue() > expectedAmount;
 	}
 }
