@@ -10,11 +10,18 @@ import kiattenMittons.Helpers.WeightedProbability;
 public class PlayerGenerator {
 
 	private static Random randomGenerator = new Random();
-	private static List<Player> players = PlayerFileReader.GeneratePlayers();
+	private static List<Player> players = null;
 	private static final int[] INIT_CONTRACT_LENGTHS = {1, 2, 3, 4};
 	private static final double[] INIT_CONTRACT_WEIGHTS = {1.0/3.0, 1.0/3.0, 2.0/9.0, 1.0/9.0};
 	private static final int DRAFT_SIZE = 90;
 	private static final double TEAM_PREFERENCE_MEAN = .2;
+	
+	private static List<Player> getPlayers() {
+		if(players == null) {
+			players = PlayerFileReader.GeneratePlayers();
+		}
+		return players;
+	}
 	
 	/*
 	 * approximated from an exponential distribution with rate = 1/6 
@@ -33,7 +40,7 @@ public class PlayerGenerator {
 	 * @return Initial players
 	 */
 	public static List<Player> generatePlayers() {
-		List<Player> newPlayers = new ArrayList<Player>(players);
+		List<Player> newPlayers = new ArrayList<Player>(getPlayers());
 		
 		for(Player player : newPlayers) {
 			player.setYearsLeft(generateYearsLeft());
@@ -60,9 +67,9 @@ public class PlayerGenerator {
 	 * @return a random Player based on the current NBA distribution
 	 */
 	private static Player samplePlayer() {
-		int index = randomGenerator.nextInt(players.size());
+		int index = randomGenerator.nextInt(getPlayers().size());
 		
-		Player sampled = players.get(index);
+		Player sampled = getPlayers().get(index);
 		sampled.setYearsLeft(generateYearsLeft());
 		
 		return new Player(sampled);
