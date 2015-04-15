@@ -61,6 +61,7 @@ docs/
 model_description.txt
 ReadMe.txt
 velocity.log
+velocity.log.1
 Repast.settings
 *.csv
 config.xml

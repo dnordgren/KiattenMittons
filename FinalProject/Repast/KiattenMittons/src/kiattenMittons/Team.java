@@ -126,16 +126,11 @@ public class Team {
 		double sum = 0, diff;
 		for(int i = 0; i < size - 1; i++) {
 			//difference between first most recent power ranking, and (i+1) seasons back 
-			diff = Math.abs(powerIndices.get(size - 1) - powerIndices.get(size - (2 + i)));
+			diff = Math.abs(powerIndices.get(powerIndices.size() - 1) - powerIndices.get(powerIndices.size() - (2 + i)));
 			sum += diff * scaledWeights[i];
 		}
 
 		return sum;
-	}
-
-	@ScheduledMethod(start = 0, interval = LeagueBuilder.YEAR_LENGTH / LeagueBuilder.NUM_OFFSEASON_WEEKS)
-	public void makeOffersToTopFreeAgents() {
-
 	}
 
 	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 0.0)
@@ -166,7 +161,8 @@ public class Team {
 	@ScheduledMethod(start = 1, interval = 1, priority = 0.0)
 	public void makeOffers() {
 		// TODO magic number
-		if (15 >= players.size()) {
+		
+		if (players.size() >= 15) {
 			return;
 		}
 
@@ -203,6 +199,7 @@ public class Team {
 	}
 
 	private void determineOfferForPlayers(List<ProspectivePlayer> prospectivePlayers) {
+		System.out.println(prospectivePlayers.size());
 		if (0 == prospectivePlayers.size()) {
 			return;
 		}
@@ -210,6 +207,7 @@ public class Team {
 		ProspectivePlayer topProspect = prospectivePlayers.get(0);
 		double fundsRemaining = kiattenMittons.League.SALARY_CAP - dollarsSpentThisYear;
 		int spotsRemaining = 15 - players.size();
+		spotsRemaining = Math.min(spotsRemaining, prospectivePlayers.size());
 
 		double valueAddedByTopPlayers = 0;
 		for (int i = 0; i < spotsRemaining; i++) {
@@ -217,6 +215,14 @@ public class Team {
 		}
 
 		// determine offer for most top prospect
+		System.out.print("topProspectValueAdded: ");
+		System.out.print(topProspect.getValueAdded());
+		System.out.println("");
+		System.out.println("valueAddedByTopPlayers: ");
+		System.out.print(valueAddedByTopPlayers);
+		System.out.println("");
+		System.out.print("fundsRemaining: ");
+		System.out.print(fundsRemaining);
 		double topProspectOffer = (topProspect.getValueAdded() / valueAddedByTopPlayers) * fundsRemaining;
 		// offer can't be greater than max salary
 		if (topProspectOffer > kiattenMittons.League.CONTRACT_MAX) {
@@ -243,5 +249,9 @@ public class Team {
 	public void registerAcceptedOffer(Player player, Contract offer) {
 		players.add(player);
 		dollarsSpentThisYear += offer.getValue();
+	}
+	
+	public int getPlayerCount() {
+		return players.size();
 	}
 }
