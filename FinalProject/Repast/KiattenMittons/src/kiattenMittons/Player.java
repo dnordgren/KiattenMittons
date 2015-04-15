@@ -152,9 +152,25 @@ public class Player {
 		}
 	}
 
-	private Integer evaluateOffer(Contract offer) {
-		// TODO: Do something real.
-		return 0;
+	/**
+	 * Players evaluate an offer as the combination of its value ($) and 
+	 * the skill of the team offering that contract. Both of the raw values
+	 * are scaled to be between 0 and 1, and then weighted by the Player's
+	 * team preference factor
+	 * @param offer
+	 * @return offer value
+	 */
+	private double evaluateOffer(Contract offer) {
+		//power index is scaled out of 35 to put it on the same scale as $
+		double scaledTeamIndex = offer.getSignedTeam().getPowerIndex() / 35.0;
+		
+		double scaledContractValue = (offer.getValue() - League.CONTRACT_MIN) / 
+				(League.CONTRACT_MAX - League.CONTRACT_MIN);
+		
+		double offerValue = teamPreferenceFactor * scaledTeamIndex + 
+				(1 - teamPreferenceFactor) * scaledContractValue;
+		
+		return offerValue;
 	}
 
 	public void endOffseason() {

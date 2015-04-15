@@ -57,7 +57,7 @@ public class Team {
 	/**
 	 * @return power index (weighted sum of PERs)
 	 */
-	private double getPowerIndex() {
+	public double getPowerIndex() {
 		Collections.sort(players, Player.comparator);
 		
 		/*
