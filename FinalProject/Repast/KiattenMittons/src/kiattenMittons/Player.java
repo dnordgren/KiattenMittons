@@ -138,12 +138,21 @@ public class Player {
 		double value = 0;
 		
 		/*
+		 * the function is only trained on this range of values,
+		 * so anything outside this range hits a ceiling/floor
+		 */
+		double effectivePer = Math.max(per, 8.7349);
+		effectivePer = Math.min(effectivePer, 32.8994);
+		
+		/*
 		 * the fitted function is as follows:
 		 * value = c[0] + c[1] * per + c[2] * per^2 + c[3] * per^3
 		 */
 		for(int i = 0; i < COEFFICIENTS.length; i++) {
 			value += COEFFICIENTS[i] * Math.pow(per, i);
 		}
+		
+		value = Math.min(value, League.CONTRACT_MAX);
 		
 		return value;
 	}
