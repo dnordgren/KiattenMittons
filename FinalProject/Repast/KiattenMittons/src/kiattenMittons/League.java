@@ -14,13 +14,25 @@ public class League {
 	 * for the NBA in 2015.  There are exceptions to these values,
 	 * but for simplification, we are ignoring those special cases.  
 	 */
-	public static final double CONTRACT_MIN = (Double)RunEnvironment.getInstance().getParameters().getValue("minIndividualContractSize"); 
-	public static final double CONTRACT_MAX = (Double)RunEnvironment.getInstance().getParameters().getValue("maxIndividualContractSize");
-	public static final double SALARY_CAP = (Double)RunEnvironment.getInstance().getParameters().getValue("salaryCap");
+	public static final double CONTRACT_MIN = contractMin();
+	public static final double CONTRACT_MAX = contractMax();
+	public static final double SALARY_CAP = salaryCap();
 	private List<Team> teams;
 	
 	public League(List<Team> teams) {
 		this.teams = teams;
+	}
+
+	private static double contractMin() {
+		return (Double)RunEnvironment.getInstance().getParameters().getValue("minIndividualContractSize");
+	}
+
+	private static double contractMax() {
+		return (Double)RunEnvironment.getInstance().getParameters().getValue("maxIndividualContractSize");
+	}
+
+	private static double salaryCap() {
+		return (Double)RunEnvironment.getInstance().getParameters().getValue("salaryCap");
 	}
 	
 	/**
@@ -33,6 +45,7 @@ public class League {
 		for(Team tm : teams) {
 			sum += tm.getParityContribution();
 		}
+		System.out.println(sum);
 		return sum;
 	}
 	
