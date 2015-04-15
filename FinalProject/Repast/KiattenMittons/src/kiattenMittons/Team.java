@@ -227,7 +227,7 @@ public class Team {
 		double worstProspectOffer = (prospectivePlayers.get(spotsRemaining - 1).getValueAdded() / valueAddedByTopPlayers) * fundsRemaining;
 		if (topProspectOffer >= topProspectExpectedReserve &&
 			worstProspectOffer >= kiattenMittons.League.CONTRACT_MIN) {
-			int contractLength = kiattenMittons.LeagueGeneration.PlayerGenerator.generateYearsLeft();
+			int contractLength = kiattenMittons.LeagueGeneration.PlayerGenerator.generateContractYearsLeft();
 			if (contractLength > topProspect.getPlayer().getYearsLeft()) {
 				contractLength = topProspect.getPlayer().getYearsLeft();
 			}
