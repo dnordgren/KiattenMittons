@@ -87,7 +87,7 @@ public class PlayerGenerator {
 	 */
 	public static int generateYearsLeft() {
 		//returning + 1 since we want the range to start at 1
-		return WeightedProbability.weightedSelect(YEAR_WEIGHTS) + 1;
+		return WeightedProbability.weightedSelect(YEAR_WEIGHTS) + 1 + (Integer)RunEnvironment.getInstance().getParameters().getValue("contractAdjustment");
 	}
 	
 	/**
