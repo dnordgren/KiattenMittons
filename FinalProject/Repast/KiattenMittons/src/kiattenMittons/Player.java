@@ -15,6 +15,10 @@ public class Player {
 	private Contract contract;
 	private ArrayList<Contract> offers;
 	
+	private static final double[] COEFFICIENTS = {
+		12671051.1, -3003452.8, 217568.5, -3483.8
+	};
+	
 	//TODO: make sure that this is sorting correctly
 	public static Comparator<Player> comparator = new Comparator<Player>() {
 		public int compare(Player p1, Player p2) {
@@ -32,11 +36,11 @@ public class Player {
 	 * for setting up the initial league
 	 * @param per
 	 */
-	public Player(double per, TeamName teamName, int yearsLeft, Contract contract) {
+	public Player(double per, TeamName teamName, int yearsLeft) {
 		this.per = per;
 		this.teamName = teamName;
 		this.yearsLeft = yearsLeft;
-		this.contract = contract;
+		this.contract = new Contract();
 		this.offers = new ArrayList<Contract>();
 	}
 	
@@ -70,6 +74,10 @@ public class Player {
 	public int getYearsLeft() {
 		return this.yearsLeft;
 	}
+	
+	public void setYearsLeft(int years) {
+		this.yearsLeft = years;
+	}
 
 	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 1.0)
 	public void updateYearsLeft() {
@@ -90,10 +98,34 @@ public class Player {
 		}
 	}
 	
-	public void signWithTeam(Team team, int years, double value) {
-        this.contract.signWithTeam(team, years, value);
+	public void signWithTeam(Team team, int years, double value) throws Exception{
+		if(this.contract.getSignedTeam() == null) {			
+			this.contract.signWithTeam(team, years, value);
+		} else {
+			throw new Exception("Attempting to sign a player with an existing contract");
+		}
     }
-
+	
+	/**
+	 * Based on a function fit on current NBA player PER
+	 * and salary data, determine the expected value
+	 * of this NBA player
+	 * @return
+	 */
+	public double getPerBasedValue() {
+		double value = 0;
+		
+		/*
+		 * the fitted function is as follows:
+		 * value = c[0] + c[1] * per + c[2] * per^2 + c[3] * per^3
+		 */
+		for(int i = 0; i < COEFFICIENTS.length; i++) {
+			value += COEFFICIENTS[i] * Math.pow(per, i);
+		}
+		
+		return value;
+	}
+	
 	public void addOffer(Contract contract) {
 		this.offers.add(contract);
 	}
