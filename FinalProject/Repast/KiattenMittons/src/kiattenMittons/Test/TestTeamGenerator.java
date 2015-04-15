@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 import kiattenMittons.Player;
 import kiattenMittons.LeagueGeneration.PlayerGenerator;
 
-public class TeamGeneratorTest extends TestCase {
+public class TestTeamGenerator extends TestCase {
 	
 	public void testDraft() throws Exception {
 		List<Player> draftClass = PlayerGenerator.generateDraftClass();

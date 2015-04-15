@@ -63,9 +63,10 @@ public class Team {
 	/**
 	 * @return power index (weighted sum of PERs)
 	 */
+
 	private double calculatePowerIndex(List<Player> teamPlayers) {
 		Collections.sort(teamPlayers, Player.comparator);
-		
+
 		/*
 		 * Right now, teams with fewer than 15 players 
 		 * are just missing out on potential minutes
@@ -87,7 +88,7 @@ public class Team {
 	/**
 	 * @return power index (weighted sum of PERs)
 	 */
-	private double getPowerIndex() {
+	public double getPowerIndex() {
 		return calculatePowerIndex(players);
 	}
 
