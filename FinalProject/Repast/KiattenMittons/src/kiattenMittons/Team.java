@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import kiattenMittons.Helpers.ProspectivePlayer;
 import kiattenMittons.Helpers.WeightScaler;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
+import repast.simphony.context.Context;
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.util.ContextUtils;
+import repast.simphony.util.collections.IndexedIterable;
 
 public class Team {
 	private TeamName teamName;
@@ -58,17 +63,17 @@ public class Team {
 	/**
 	 * @return power index (weighted sum of PERs)
 	 */
-	private double getPowerIndex() {
-		Collections.sort(players, Player.comparator);
+	private double calculatePowerIndex(List<Player> teamPlayers) {
+		Collections.sort(teamPlayers, Player.comparator);
 		
 		/*
 		 * Right now, teams with fewer than 15 players 
 		 * are just missing out on potential minutes
 		 */
 		double powerIndex = 0;
-		for(int i = 0; i < players.size(); i++) {
+		for(int i = 0; i < teamPlayers.size(); i++) {
 			if(i < PLAYER_WEIGHTS.length) {				
-				powerIndex += players.get(i).getPER() * PLAYER_WEIGHTS[i]; 
+				powerIndex += teamPlayers.get(i).getPER() * PLAYER_WEIGHTS[i]; 
 			}
 			/*
 			 *  teams with more than 15 players get nothing for those players,
@@ -78,7 +83,23 @@ public class Team {
 		
 		return powerIndex;
 	}
-	
+
+	/**
+	 * @return power index (weighted sum of PERs)
+	 */
+	private double getPowerIndex() {
+		return calculatePowerIndex(players);
+	}
+
+	/**
+	 * @return power index (weighted sum of PERs)
+	 */
+	private double getPowerIndex(Player player) {
+		List<Player> teamWithPlayer = new ArrayList<Player>(players);
+		teamWithPlayer.add(player);
+		return calculatePowerIndex(teamWithPlayer);
+	}
+
 	/**
 	 * Compute the contribution that this team makes to the
 	 * overall league parity value 
@@ -127,7 +148,7 @@ public class Team {
 	public void updateRoster() {
 		dollarsSpentThisYear = 0;
 		// determine which players retired or are free agents
-		ArrayList<Player> removedPlayers = new ArrayList<Player>();
+		List<Player> removedPlayers = new ArrayList<Player>();
 		for (Player p : players) {
 			if (0 == p.getYearsLeft() || (null == p.getContract() ? false : null == p.getContract().getSignedTeam())) {
 				removedPlayers.add(p);
@@ -145,21 +166,44 @@ public class Team {
 
 	public void makeOffers() {
 		// Need to determine which players to offer.
-		ArrayList<Player> playersToOffer = determinePlayersToOffer();
-		for (Player player: playersToOffer) {
+		List<ProspectivePlayer> playersToOffer = determinePlayersToOffer();
+		for (ProspectivePlayer prospectivePlayer: playersToOffer) {
+			Player player = prospectivePlayer.getPlayer();
 			Contract contract = determineOfferForPlayer(player);
 			player.addOffer(contract);
 		}
 	}
 
-	private ArrayList<Player> determinePlayersToOffer() {
-		// TODO: Something real please.
-		// TODO: Make sure to respect the league salary cap.
-		return new ArrayList<Player>();
+	private List<ProspectivePlayer> determinePlayersToOffer() {
+		// Find all free agents currently in the system.
+		Iterable<Player> allPlayers = RunState.getInstance().getMasterContext().getObjects(Player.class);
+		List<Player> availablePlayers = new ArrayList<Player>();
+		for (Player player: allPlayers) {
+			if (null == player.getContract() || null == player.getContract().getSignedTeam()) {
+				availablePlayers.add(player);
+			}
+		}
+
+		List<ProspectivePlayer> prospectivePlayers = new ArrayList<ProspectivePlayer>();
+		for (Player player: availablePlayers) {
+			double powerDelta = getPlayerPowerDelta(player);
+			ProspectivePlayer prospectivePlayer = new ProspectivePlayer(powerDelta, player);
+			prospectivePlayers.add(prospectivePlayer);
+		}
+
+		Collections.sort(prospectivePlayers, ProspectivePlayer.comparator);
+		return prospectivePlayers;
+	}
+
+	private double getPlayerPowerDelta(Player player) {
+		double valueWithout = getPowerIndex();
+		double valueWith = getPowerIndex(player);
+		return valueWith - valueWithout;
 	}
 
 	private Contract determineOfferForPlayer(Player player) {
 		// TODO: Something real please.
+		// TODO: Make sure to respect the salary cap.
 		return new Contract();
 	}
 
