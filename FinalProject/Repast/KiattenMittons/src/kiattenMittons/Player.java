@@ -113,7 +113,7 @@ public class Player {
 	 */
 	@ScheduledMethod(start = 1, interval = 1, priority = 1.0)
 	public void increaseDesperation() {
-		desperationMultiplier *= .99;
+		desperationMultiplier *= .993;
 	}
 	
 	public Contract getContract() {
