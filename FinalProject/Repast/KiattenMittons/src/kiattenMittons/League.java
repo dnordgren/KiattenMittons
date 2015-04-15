@@ -8,6 +8,8 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.ContextUtils;
 
 public class League {
+	// See http://www.basketball-reference.com/contracts/
+	public static final double SALARY_CAP = 63065000;
 	private List<Team> teams;
 	
 	public League(List<Team> teams) {
