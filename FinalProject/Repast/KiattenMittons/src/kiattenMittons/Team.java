@@ -17,6 +17,7 @@ public class Team {
 	private List<Player> players;
 	private List<Double> powerIndices;
 	private double dollarsSpentThisYear;
+	private double riskAmount;
 	
 	// Weights based on the proportions of minutes given to actual NBA players
 	private static final double[] PLAYER_WEIGHTS = {
@@ -37,6 +38,8 @@ public class Team {
 		this.teamName = teamName;
 		this.players = new ArrayList<Player>();
 		this.powerIndices = new ArrayList<Double>();
+		
+		assignRiskAmount();
 	}
 
 	public TeamName getTeamName() {
@@ -220,10 +223,8 @@ public class Team {
 		if (topProspectOffer > kiattenMittons.League.CONTRACT_MAX) {
 			topProspectOffer = kiattenMittons.League.CONTRACT_MAX;
 		}
-
-		Random random = new Random();
 		
-		double offerDiscount = (random.nextDouble() / 5) + 0.8;//getOfferDiscountFactor();//
+		double offerDiscount = getOfferDiscountFactor();
 		double topProspectExpectedReserve = topProspect.getPlayer().getPerBasedValue() * offerDiscount;
 
 		// verify that we're playing the least best prospect at least the minimum salary
@@ -241,15 +242,29 @@ public class Team {
 			determineOfferForPlayers(prospectivePlayers);
 		}
 	}
+	
+	private void assignRiskAmount() {
+		Random random = new Random();
+		double riskyProportion = (Double)RunEnvironment.getInstance().getParameters().getValue("riskyTeamProportion");
+		if(random.nextDouble() < riskyProportion) {
+			riskAmount = (Double)RunEnvironment.getInstance().getParameters().getValue("riskAmount");
+		} else {
+			riskAmount = 1;
+		}
+	}
 
 	/**
-	 * 
+	 * Based on a team's risk amount, the offer is discounted
+	 * by a certain proportion
 	 * @return
 	 */
-//	private double getOfferDiscountFactor() {
-//		(Double)RunEnvironment.getInstance().getParameters().getValue("minIndividualContractSize");
-//		return 0;
-//	}
+	private double getOfferDiscountFactor() {
+		Random random = new Random();
+		
+		//team will low-ball an offer by up to riskAmount %
+		double riskThisTime = random.nextDouble() * (1 - riskAmount);
+		return 1 - riskThisTime;
+	}
 
 	public void registerAcceptedOffer(Player player, Contract offer) {
 		players.add(player);
