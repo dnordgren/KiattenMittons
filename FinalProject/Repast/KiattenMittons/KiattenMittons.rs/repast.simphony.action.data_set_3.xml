@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>League Agg</name>
+  <name>Team Players</name>
   <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -11,17 +11,17 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-1065796567</hashCode>
+    <hashCode>1970337103</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>Parity</string>
+      <string>AveragePlayerCount</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Parity</id>
-        <className>kiattenMittons.League</className>
-        <methodName>getParity</methodName>
-        <aggType>SUM</aggType>
+        <id>AveragePlayerCount</id>
+        <className>kiattenMittons.Team</className>
+        <methodName>getPlayerCount</methodName>
+        <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>

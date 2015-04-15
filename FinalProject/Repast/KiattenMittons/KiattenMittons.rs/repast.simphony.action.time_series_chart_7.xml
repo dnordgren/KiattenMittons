@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>League Parity 2</name>
-  <dataSet>League Agg</dataSet>
+  <name>Average Players Per Team</name>
+  <dataSet>Team Players</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>Parity</yAxisLabel>
-  <chartTitle>League Parity</chartTitle>
+  <yAxisLabel>Players</yAxisLabel>
+  <chartTitle>Average Players Per Team</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,9 +21,9 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>Parity</string>
+      <string>AveragePlayerCount</string>
       <SeriesData>
-        <label>Parity</label>
+        <label>AveragePlayerCount</label>
         <color>
           <red>0</red>
           <green>0</green>
