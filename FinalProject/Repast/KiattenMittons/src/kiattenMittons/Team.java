@@ -39,7 +39,7 @@ public class Team {
 		this.players = new ArrayList<Player>();
 		this.powerIndices = new ArrayList<Double>();
 		double maxOverage = (Double)RunEnvironment.getInstance().getParameters().getValue("maxTeamSalaryCapOverage");
-		this.salaryCapOverage = (new Random()).nextDouble() * maxOverage; 
+		this.salaryCapOverage = (new Random()).nextDouble() * maxOverage * League.SALARY_CAP; 
 	}
 
 	public TeamName getTeamName() {
