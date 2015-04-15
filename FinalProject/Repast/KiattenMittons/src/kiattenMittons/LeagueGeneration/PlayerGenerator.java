@@ -13,7 +13,8 @@ public class PlayerGenerator {
 	private static List<Player> players = PlayerFileReader.GeneratePlayers();
 	private static final int[] INIT_CONTRACT_LENGTHS = {1, 2, 3, 4};
 	private static final double[] INIT_CONTRACT_WEIGHTS = {1.0/3.0, 1.0/3.0, 2.0/9.0, 1.0/9.0};
-	private static final int DRAFT_SIZE = 90; 
+	private static final int DRAFT_SIZE = 90;
+	private static final double TEAM_PREFERENCE_MEAN = .2;
 	
 	/*
 	 * approximated from an exponential distribution with rate = 1/6 
@@ -72,9 +73,25 @@ public class PlayerGenerator {
 	 * based on the set of weights defined
 	 * @return number of years remaining in NBA
 	 */
-	private static int generateYearsLeft() {
+	public static int generateYearsLeft() {
 		//returning + 1 since we want the range to start at 1
 		return WeightedProbability.weightedSelect(YEAR_WEIGHTS) + 1;
+	}
+	
+	/**
+	 * Creates a random preference factor (bounded 0 to 1)
+	 * @return
+	 */
+	public static double generatePreferenceFactor() {
+		double standardDeviation = .05;
+		double gaussian = randomGenerator.nextGaussian();
+		
+		double tpf = (gaussian * standardDeviation) + TEAM_PREFERENCE_MEAN;
+		
+		//keep it between 0 and 1
+		tpf = Math.min(tpf, 1);
+		tpf = Math.max(tpf, 0);
+		return tpf;
 	}
 	
 	/**

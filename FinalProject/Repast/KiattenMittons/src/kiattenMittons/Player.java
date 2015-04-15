@@ -2,6 +2,7 @@ package kiattenMittons;
 
 import java.util.*;
 
+import kiattenMittons.LeagueGeneration.PlayerGenerator;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 import kiattenMittons.Contract;
 import repast.simphony.context.Context;
@@ -14,6 +15,7 @@ public class Player {
 	private int yearsLeft;
 	private Contract contract;
 	private ArrayList<Contract> offers;
+	private double teamPreferenceFactor;
 	
 	private static final double[] COEFFICIENTS = {
 		12671051.1, -3003452.8, 217568.5, -3483.8
@@ -36,12 +38,13 @@ public class Player {
 	 * for setting up the initial league
 	 * @param per
 	 */
-	public Player(double per, TeamName teamName, int yearsLeft) {
+	public Player(double per, TeamName teamName) {
 		this.per = per;
 		this.teamName = teamName;
-		this.yearsLeft = yearsLeft;
 		this.contract = new Contract();
 		this.offers = new ArrayList<Contract>();
+		this.yearsLeft = PlayerGenerator.generateYearsLeft();
+		this.teamPreferenceFactor = PlayerGenerator.generatePreferenceFactor();
 	}
 	
 	/**
