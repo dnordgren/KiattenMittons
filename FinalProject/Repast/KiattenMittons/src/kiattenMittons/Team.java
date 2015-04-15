@@ -8,6 +8,7 @@ import java.util.Random;
 import kiattenMittons.Helpers.ProspectivePlayer;
 import kiattenMittons.Helpers.WeightScaler;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
@@ -16,6 +17,7 @@ public class Team {
 	private List<Player> players;
 	private List<Double> powerIndices;
 	private double dollarsSpentThisYear;
+	private double salaryCapOverage;
 	
 	// Weights based on the proportions of minutes given to actual NBA players
 	private static final double[] PLAYER_WEIGHTS = {
@@ -36,6 +38,8 @@ public class Team {
 		this.teamName = teamName;
 		this.players = new ArrayList<Player>();
 		this.powerIndices = new ArrayList<Double>();
+		double maxOverage = (Double)RunEnvironment.getInstance().getParameters().getValue("maxTeamSalaryCapOverage");
+		this.salaryCapOverage = (new Random()).nextDouble() * maxOverage; 
 	}
 
 	public TeamName getTeamName() {
@@ -204,7 +208,8 @@ public class Team {
 		}
 
 		ProspectivePlayer topProspect = prospectivePlayers.get(0);
-		double fundsRemaining = kiattenMittons.League.SALARY_CAP - dollarsSpentThisYear;
+		double fundsRemaining = kiattenMittons.League.SALARY_CAP + 
+				salaryCapOverage - dollarsSpentThisYear;
 		int spotsRemaining = 15 - players.size();
 		spotsRemaining = Math.min(spotsRemaining, prospectivePlayers.size());
 
