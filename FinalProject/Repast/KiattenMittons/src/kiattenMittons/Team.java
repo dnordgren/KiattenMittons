@@ -199,7 +199,6 @@ public class Team {
 	}
 
 	private void determineOfferForPlayers(List<ProspectivePlayer> prospectivePlayers) {
-		System.out.println(prospectivePlayers.size());
 		if (0 == prospectivePlayers.size()) {
 			return;
 		}
@@ -215,14 +214,6 @@ public class Team {
 		}
 
 		// determine offer for most top prospect
-		System.out.print("topProspectValueAdded: ");
-		System.out.print(topProspect.getValueAdded());
-		System.out.println("");
-		System.out.println("valueAddedByTopPlayers: ");
-		System.out.print(valueAddedByTopPlayers);
-		System.out.println("");
-		System.out.print("fundsRemaining: ");
-		System.out.print(fundsRemaining);
 		double topProspectOffer = (topProspect.getValueAdded() / valueAddedByTopPlayers) * fundsRemaining;
 		// offer can't be greater than max salary
 		if (topProspectOffer > kiattenMittons.League.CONTRACT_MAX) {
