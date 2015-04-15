@@ -126,7 +126,7 @@ public class Team {
 		double sum = 0, diff;
 		for(int i = 0; i < size - 1; i++) {
 			//difference between first most recent power ranking, and (i+1) seasons back 
-			diff = Math.abs(powerIndices.get(size - 1) - powerIndices.get(size - (2 + i)));
+			diff = Math.abs(powerIndices.get(powerIndices.size() - 1) - powerIndices.get(powerIndices.size() - (2 + i)));
 			sum += diff * scaledWeights[i];
 		}
 
