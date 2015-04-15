@@ -38,8 +38,16 @@ public class Team {
 		this.teamName = teamName;
 		this.players = new ArrayList<Player>();
 		this.powerIndices = new ArrayList<Double>();
+
+		//set up willingness to go over the salary cap
+		Random random = new Random();
 		double maxOverage = (Double)RunEnvironment.getInstance().getParameters().getValue("maxTeamSalaryCapOverage");
-		this.salaryCapOverage = (new Random()).nextDouble() * maxOverage * League.SALARY_CAP; 
+		double probabilityOfOver = (Double)RunEnvironment.getInstance().getParameters().getValue("percentTeamsWillingOverSalaryCap");
+		if(random.nextDouble() < probabilityOfOver) {
+			this.salaryCapOverage = random.nextDouble() * maxOverage * League.SALARY_CAP; 
+		} else {
+			this.salaryCapOverage = 0;
+		}
 	}
 
 	public TeamName getTeamName() {
