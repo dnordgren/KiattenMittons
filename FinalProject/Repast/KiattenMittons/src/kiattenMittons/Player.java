@@ -175,6 +175,7 @@ public class Player {
 			bestOffer.getSignedTeam().registerAcceptedOffer(this, bestOffer);
 			this.contract = bestOffer;
 		}
+		resetOffers();
 	}
 	
 	/**
@@ -217,7 +218,8 @@ public class Player {
 		return offerValue;
 	}
 
-	public void endOffseason() {
+	
+	private void resetOffers() {
 		this.offers = new ArrayList<Contract>();
 	}
 
