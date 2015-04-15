@@ -12,6 +12,7 @@ public class Team {
 	private TeamName teamName;
 	private List<Player> players;
 	private List<Double> powerIndices;
+	private double dollarsSpentThisYear;
 	
 	// Weights based on the proportions of minutes given to actual NBA players
 	private static final double[] PLAYER_WEIGHTS = {
@@ -124,11 +125,15 @@ public class Team {
 
 	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 3.0)
 	public void updateRoster() {
+		dollarsSpentThisYear = 0;
 		// determine which players retired or are free agents
 		ArrayList<Player> removedPlayers = new ArrayList<Player>();
 		for (Player p : players) {
 			if (0 == p.getYearsLeft() || (null == p.getContract() ? false : null == p.getContract().getSignedTeam())) {
 				removedPlayers.add(p);
+			}
+			else {
+				dollarsSpentThisYear += null == p.getContract() ? 0 : p.getContract().getValue();
 			}
 		}
 
@@ -149,6 +154,7 @@ public class Team {
 
 	private ArrayList<Player> determinePlayersToOffer() {
 		// TODO: Something real please.
+		// TODO: Make sure to respect the league salary cap.
 		return new ArrayList<Player>();
 	}
 
@@ -158,7 +164,8 @@ public class Team {
 	}
 
 	public void registerAcceptedOffer(Player player, Contract offer) {
-		// TODO: Something real please.
+		players.add(player);
+		dollarsSpentThisYear += offer.getValue();
 	}
 
 	public void registerDeclinedOffer(Player player, Contract offer) {
