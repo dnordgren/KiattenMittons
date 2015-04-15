@@ -12,9 +12,9 @@ public class TestPlayerSorting extends TestCase {
 	public void testSort() {
 		List<Player> players = new ArrayList<Player>();
 		
-		players.add(new Player(1, null, 1));
-		players.add(new Player(3, null, 1));
-		players.add(new Player(2, null, 1));
+		players.add(new Player(1, null));
+		players.add(new Player(3, null));
+		players.add(new Player(2, null));
 		
 		Collections.sort(players, Player.comparator);
 		

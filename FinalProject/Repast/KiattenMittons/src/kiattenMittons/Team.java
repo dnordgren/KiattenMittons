@@ -3,9 +3,12 @@ package kiattenMittons;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
+import kiattenMittons.Helpers.ProspectivePlayer;
 import kiattenMittons.Helpers.WeightScaler;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class Team {
@@ -58,17 +61,18 @@ public class Team {
 	/**
 	 * @return power index (weighted sum of PERs)
 	 */
-	public double getPowerIndex() {
-		Collections.sort(players, Player.comparator);
-		
+
+	private double calculatePowerIndex(List<Player> teamPlayers) {
+		Collections.sort(teamPlayers, Player.comparator);
+
 		/*
 		 * Right now, teams with fewer than 15 players 
 		 * are just missing out on potential minutes
 		 */
 		double powerIndex = 0;
-		for(int i = 0; i < players.size(); i++) {
+		for(int i = 0; i < teamPlayers.size(); i++) {
 			if(i < PLAYER_WEIGHTS.length) {				
-				powerIndex += players.get(i).getPER() * PLAYER_WEIGHTS[i]; 
+				powerIndex += teamPlayers.get(i).getPER() * PLAYER_WEIGHTS[i]; 
 			}
 			/*
 			 *  teams with more than 15 players get nothing for those players,
@@ -78,7 +82,23 @@ public class Team {
 		
 		return powerIndex;
 	}
-	
+
+	/**
+	 * @return power index (weighted sum of PERs)
+	 */
+	public double getPowerIndex() {
+		return calculatePowerIndex(players);
+	}
+
+	/**
+	 * @return power index (weighted sum of PERs)
+	 */
+	private double getPowerIndex(Player player) {
+		List<Player> teamWithPlayer = new ArrayList<Player>(players);
+		teamWithPlayer.add(player);
+		return calculatePowerIndex(teamWithPlayer);
+	}
+
 	/**
 	 * Compute the contribution that this team makes to the
 	 * overall league parity value 
@@ -127,7 +147,7 @@ public class Team {
 	public void updateRoster() {
 		dollarsSpentThisYear = 0;
 		// determine which players retired or are free agents
-		ArrayList<Player> removedPlayers = new ArrayList<Player>();
+		List<Player> removedPlayers = new ArrayList<Player>();
 		for (Player p : players) {
 			if (0 == p.getYearsLeft() || (null == p.getContract() ? false : null == p.getContract().getSignedTeam())) {
 				removedPlayers.add(p);
@@ -143,32 +163,85 @@ public class Team {
 		}
 	}
 
+	@ScheduledMethod(start = 1, interval = 1, priority = 0.0)
 	public void makeOffers() {
-		// Need to determine which players to offer.
-		ArrayList<Player> playersToOffer = determinePlayersToOffer();
-		for (Player player: playersToOffer) {
-			Contract contract = determineOfferForPlayer(player);
-			player.addOffer(contract);
+		// TODO magic number
+		if (15 >= players.size()) {
+			return;
 		}
+
+		// Need to determine which players to offer.
+		List<ProspectivePlayer> playersToOffer = determinePlayersToOffer();
+		determineOfferForPlayers(playersToOffer);
 	}
 
-	private ArrayList<Player> determinePlayersToOffer() {
-		// TODO: Something real please.
-		// TODO: Make sure to respect the league salary cap.
-		return new ArrayList<Player>();
+	private List<ProspectivePlayer> determinePlayersToOffer() {
+		// Find all free agents currently in the system.
+		Iterable<Player> allPlayers = RunState.getInstance().getMasterContext().getObjects(Player.class);
+		List<Player> availablePlayers = new ArrayList<Player>();
+		for (Player player: allPlayers) {
+			if (null == player.getContract() || null == player.getContract().getSignedTeam()) {
+				availablePlayers.add(player);
+			}
+		}
+
+		List<ProspectivePlayer> prospectivePlayers = new ArrayList<ProspectivePlayer>();
+		for (Player player: availablePlayers) {
+			double powerDelta = getPlayerPowerDelta(player);
+			ProspectivePlayer prospectivePlayer = new ProspectivePlayer(powerDelta, player);
+			prospectivePlayers.add(prospectivePlayer);
+		}
+
+		Collections.sort(prospectivePlayers, ProspectivePlayer.comparator);
+		return prospectivePlayers;
 	}
 
-	private Contract determineOfferForPlayer(Player player) {
-		// TODO: Something real please.
-		return new Contract();
+	private double getPlayerPowerDelta(Player player) {
+		double valueWithout = getPowerIndex();
+		double valueWith = getPowerIndex(player);
+		return valueWith - valueWithout;
+	}
+
+	private void determineOfferForPlayers(List<ProspectivePlayer> prospectivePlayers) {
+		if (0 == prospectivePlayers.size()) {
+			return;
+		}
+
+		ProspectivePlayer topProspect = prospectivePlayers.get(0);
+		double fundsRemaining = kiattenMittons.League.SALARY_CAP - dollarsSpentThisYear;
+		int spotsRemaining = 15 - players.size();
+
+		double valueAddedByTopPlayers = 0;
+		for (int i = 0; i < spotsRemaining; i++) {
+			valueAddedByTopPlayers += prospectivePlayers.get(i).getValueAdded();
+		}
+
+		// determine offer for most top prospect
+		double topProspectOffer = (topProspect.getValueAdded() / valueAddedByTopPlayers) * fundsRemaining;
+		// offer can't be greater than max salary
+		if (topProspectOffer > kiattenMittons.League.CONTRACT_MAX) {
+			topProspectOffer = kiattenMittons.League.CONTRACT_MAX;
+		}
+
+		Random random = new Random();
+		// discount the offer up to 20 percent
+		double offerDiscount = (random.nextDouble() / 5) + 0.8;
+		double topProspectExpectedReserve = topProspect.getPlayer().getPerBasedValue() * offerDiscount;
+
+		// verify that we're playing the least best prospect at least the minimum salary
+		double worstProspectOffer = (prospectivePlayers.get(spotsRemaining - 1).getValueAdded() / valueAddedByTopPlayers) * fundsRemaining;
+		if (topProspectOffer >= topProspectExpectedReserve &&
+			worstProspectOffer >= kiattenMittons.League.CONTRACT_MIN) {
+			topProspect.getPlayer().addOffer(new Contract(this, topProspectOffer, kiattenMittons.LeagueGeneration.PlayerGenerator.generateYearsLeft()));
+			return;
+		} else {
+			prospectivePlayers.remove(0);
+			determineOfferForPlayers(prospectivePlayers);
+		}
 	}
 
 	public void registerAcceptedOffer(Player player, Contract offer) {
 		players.add(player);
 		dollarsSpentThisYear += offer.getValue();
-	}
-
-	public void registerDeclinedOffer(Player player, Contract offer) {
-		// TODO: Something real please.
 	}
 }
