@@ -133,11 +133,6 @@ public class Team {
 		return sum;
 	}
 
-	@ScheduledMethod(start = 0, interval = LeagueBuilder.YEAR_LENGTH / LeagueBuilder.NUM_OFFSEASON_WEEKS)
-	public void makeOffersToTopFreeAgents() {
-
-	}
-
 	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 0.0)
 	public void recordPowerIndex() {
 		powerIndices.add(getPowerIndex());

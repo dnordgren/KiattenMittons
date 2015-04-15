@@ -45,7 +45,6 @@ public class League {
 		for(Team tm : teams) {
 			sum += tm.getParityContribution();
 		}
-		System.out.println(sum);
 		return sum;
 	}
 	
