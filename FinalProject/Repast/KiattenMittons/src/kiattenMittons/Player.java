@@ -22,13 +22,12 @@ public class Player {
 		12671051.1, -3003452.8, 217568.5, -3483.8
 	};
 	
-	//TODO: make sure that this is sorting correctly
 	public static Comparator<Player> comparator = new Comparator<Player>() {
 		public int compare(Player p1, Player p2) {
 			if (p1.getPER() > p2.getPER()) {
-				return 1;
-			} else if (p1.getPER() < p2.getPER()) {
 				return -1;
+			} else if (p1.getPER() < p2.getPER()) {
+				return 1;
 			}
 			return 0;
 		}
