@@ -18,6 +18,7 @@ public class Team {
 	private List<Double> powerIndices;
 	private double dollarsSpentThisYear;
 	private double riskAmount;
+	private double salaryCapOverage;
 	
 	// Weights based on the proportions of minutes given to actual NBA players
 	private static final double[] PLAYER_WEIGHTS = {
@@ -40,6 +41,16 @@ public class Team {
 		this.powerIndices = new ArrayList<Double>();
 		
 		assignRiskAmount();
+
+		//set up willingness to go over the salary cap
+		Random random = new Random();
+		double maxOverage = (Double)RunEnvironment.getInstance().getParameters().getValue("maxTeamSalaryCapOverage");
+		double probabilityOfOver = (Double)RunEnvironment.getInstance().getParameters().getValue("percentTeamsWillingOverSalaryCap");
+		if(random.nextDouble() < probabilityOfOver) {
+			this.salaryCapOverage = random.nextDouble() * maxOverage * League.SALARY_CAP; 
+		} else {
+			this.salaryCapOverage = 0;
+		}
 	}
 
 	public TeamName getTeamName() {
@@ -208,7 +219,8 @@ public class Team {
 		}
 
 		ProspectivePlayer topProspect = prospectivePlayers.get(0);
-		double fundsRemaining = kiattenMittons.League.SALARY_CAP - dollarsSpentThisYear;
+		double fundsRemaining = kiattenMittons.League.SALARY_CAP + 
+				salaryCapOverage - dollarsSpentThisYear;
 		int spotsRemaining = 15 - players.size();
 		spotsRemaining = Math.min(spotsRemaining, prospectivePlayers.size());
 

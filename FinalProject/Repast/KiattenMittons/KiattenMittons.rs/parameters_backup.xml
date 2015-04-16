@@ -6,6 +6,12 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
+				<parameter name="riskAmount" displayName="Risk Percentage (for risky teams)" type="double" 
+						defaultValue="0.8" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
 				<parameter name="minIndividualContractSize" displayName="Min Individual Contract Size" type="double" 
 						defaultValue="507336.0" 
 						isReadOnly="false" 
