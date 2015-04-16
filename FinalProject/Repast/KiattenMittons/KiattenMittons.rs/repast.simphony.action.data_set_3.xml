@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>Team Players</name>
+  <name>Team Power Index</name>
   <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -16,12 +16,12 @@
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>AveragePlayerCount</string>
+      <string>PowerIndexStandardDeviation</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>AveragePlayerCount</id>
+        <id>PowerIndexStandardDeviation</id>
         <className>kiattenMittons.Team</className>
-        <methodName>getPlayerCount</methodName>
-        <aggType>MEAN</aggType>
+        <methodName>getPowerIndex</methodName>
+        <aggType>STD_DEV</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>

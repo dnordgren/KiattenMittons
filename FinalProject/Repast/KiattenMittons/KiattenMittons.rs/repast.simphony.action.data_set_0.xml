@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>Team Power Index</name>
+  <name>Player Count</name>
   <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -14,18 +14,16 @@
     <hashCode>1970337103</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
-  <methodDataSources class="linked-hash-map">
+  <methodDataSources class="linked-hash-map"/>
+  <countSources class="linked-hash-map">
     <entry>
-      <string>PowerIndexStandardDeviation</string>
-      <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>PowerIndexStandardDeviation</id>
-        <className>kiattenMittons.Team</className>
-        <methodName>getPowerIndex</methodName>
-        <aggType>STD_DEV</aggType>
-      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+      <string>PlayerCount</string>
+      <repast.simphony.data2.engine.CountSourceDefinition>
+        <typeName>kiattenMittons.Player</typeName>
+        <id>PlayerCount</id>
+      </repast.simphony.data2.engine.CountSourceDefinition>
     </entry>
-  </methodDataSources>
-  <countSources class="linked-hash-map"/>
+  </countSources>
   <customNADataSources class="linked-hash-map"/>
   <customAggDataSources class="linked-hash-map"/>
 </repast.simphony.data2.engine.DataSetDescriptor>
