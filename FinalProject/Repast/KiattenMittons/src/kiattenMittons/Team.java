@@ -8,6 +8,7 @@ import java.util.Random;
 import kiattenMittons.Helpers.ProspectivePlayer;
 import kiattenMittons.Helpers.WeightScaler;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
@@ -25,6 +26,8 @@ public class Team {
 	private double dollarsSpentThisYear;
 	private List<Player> players;
 	private List<Double> powerIndices;
+	private double riskAmount;
+	private double salaryCapOverage;
 	private TeamName teamName;
 
 	/**
@@ -35,6 +38,18 @@ public class Team {
 		this.teamName = teamName;
 		this.players = new ArrayList<Player>();
 		this.powerIndices = new ArrayList<Double>();
+		
+		assignRiskAmount();
+
+		//set up willingness to go over the salary cap
+		Random random = new Random();
+		double maxOverage = (Double)RunEnvironment.getInstance().getParameters().getValue("maxTeamSalaryCapOverage");
+		double probabilityOfOver = (Double)RunEnvironment.getInstance().getParameters().getValue("percentTeamsWillingOverSalaryCap");
+		if(random.nextDouble() < probabilityOfOver) {
+			this.salaryCapOverage = random.nextDouble() * maxOverage * League.SALARY_CAP; 
+		} else {
+			this.salaryCapOverage = 0;
+		}
 	}
 
 	/**
@@ -91,7 +106,6 @@ public class Team {
 	 */
 	@ScheduledMethod(start = 1, interval = 1, priority = 0.0)
 	public void makeOffers() {
-		// TODO magic number
 		if (players.size() >= 15) {
 			return;
 		}
@@ -185,7 +199,8 @@ public class Team {
 		}
 
 		ProspectivePlayer topProspect = prospectivePlayers.get(0);
-		double fundsRemaining = kiattenMittons.League.SALARY_CAP - dollarsSpentThisYear;
+		double fundsRemaining = kiattenMittons.League.SALARY_CAP + 
+				salaryCapOverage - dollarsSpentThisYear;
 		int spotsRemaining = 15 - players.size();
 		spotsRemaining = Math.min(spotsRemaining, prospectivePlayers.size());
 
@@ -201,9 +216,7 @@ public class Team {
 			topProspectOffer = kiattenMittons.League.CONTRACT_MAX;
 		}
 
-		Random random = new Random();
-		// Discount the offer up to 20 percent.
-		double offerDiscount = (random.nextDouble() / 5) + 0.8;
+		double offerDiscount = getOfferDiscountFactor();
 		double topProspectExpectedReserve = topProspect.getPlayer().getPerBasedValue() * offerDiscount;
 
 		// Verify that we're playing the least best prospect at least the minimum salary.
@@ -219,6 +232,16 @@ public class Team {
 		} else {
 			prospectivePlayers.remove(0);
 			determineOfferForPlayers(prospectivePlayers);
+		}
+	}
+	
+	private void assignRiskAmount() {
+		Random random = new Random();
+		double riskyProportion = (Double)RunEnvironment.getInstance().getParameters().getValue("riskyTeamProportion");
+		if(random.nextDouble() < riskyProportion) {
+			riskAmount = (Double)RunEnvironment.getInstance().getParameters().getValue("riskAmount");
+		} else {
+			riskAmount = 1;
 		}
 	}
 
@@ -247,6 +270,19 @@ public class Team {
 		// Sort prospective players by value added.
 		Collections.sort(prospectivePlayers, ProspectivePlayer.comparator);
 		return prospectivePlayers;
+	}
+
+	/**
+	 * Based on a team's risk amount, the offer is discounted
+	 * by a certain proportion
+	 * @return
+	 */
+	private double getOfferDiscountFactor() {
+		Random random = new Random();
+		
+		//team will low-ball an offer by up to riskAmount %
+		double riskThisTime = random.nextDouble() * (1 - riskAmount);
+		return 1 - riskThisTime;
 	}
 
 	/**
