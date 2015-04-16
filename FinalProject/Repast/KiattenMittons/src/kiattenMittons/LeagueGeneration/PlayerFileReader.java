@@ -18,6 +18,11 @@ public class PlayerFileReader {
 		return GeneratePlayers(DEFAULT_PLAYER_FILE);
 	}
 	
+	/**
+	 * Read in the file of default players.
+	 * @param playerCsv
+	 * @return List of players read from the csv
+	 */
 	public static List<Player> GeneratePlayers(String playerCsv) {
 		List<Player> players = new ArrayList<Player>();
 		
