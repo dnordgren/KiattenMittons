@@ -19,6 +19,11 @@ public class PlayerGenerator {
 	private static final int DRAFT_SIZE = 90;
 	private static final double TEAM_PREFERENCE_MEAN = teamPreferenceMean();
 	
+	/**
+	 * Get the list of players once, and save it so it only
+	 * needs to be read in once.
+	 * @return The list of players
+	 */
 	private static List<Player> getPlayers() {
 		if(players == null) {
 			players = PlayerFileReader.GeneratePlayers();
@@ -92,6 +97,10 @@ public class PlayerGenerator {
 		return WeightedProbability.weightedSelect(YEAR_WEIGHTS) + 1;
 	}
 
+	/**
+	 * Randomly generating a number for the number of years in a contract
+	 * @return
+	 */
 	public static int generateContractYearsLeft() {
 		int index = WeightedProbability.weightedSelect(CONTRACT_WEIGHTS);
 		return CONTRACT_LENGTHS[index] + (Integer)RunEnvironment.getInstance().getParameters().getValue("contractAdjustment");

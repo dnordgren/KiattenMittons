@@ -21,7 +21,11 @@ public class ProspectivePlayer {
 		return player;
 	}
 	
-	//TODO: make sure that this is sorting correctly
+	/**
+	 * Comparator for sorting prospective players. The first player after
+	 * sorting should be the one whose ratio of value added to expected
+	 * price is highest.
+	 */
 	public static Comparator<ProspectivePlayer> comparator = new Comparator<ProspectivePlayer>() {
 		public int compare(ProspectivePlayer p1, ProspectivePlayer p2) {
 			double p1ValueAddedRatio = p1.getValueAdded() / p1.getPlayer().getPerBasedValue();

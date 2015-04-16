@@ -9,32 +9,52 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.ContextUtils;
 
 public class League {
-	/*
-	 * These values are based off of actual min and max values
-	 * for the NBA in 2015.  There are exceptions to these values,
-	 * but for simplification, we are ignoring those special cases.  
-	 */
-	public static final double CONTRACT_MIN = contractMin();
 	public static final double CONTRACT_MAX = contractMax();
+	public static final double CONTRACT_MIN = contractMin();
 	public static final double SALARY_CAP = salaryCap();
 	private List<Team> teams;
-	
+
 	public League(List<Team> teams) {
 		this.teams = teams;
 	}
 
-	private static double contractMin() {
-		return (Double)RunEnvironment.getInstance().getParameters().getValue("minIndividualContractSize");
-	}
-
+	/**
+	 * Static method to get the user defined parameter for maximum contract amount.
+	 * @return maximum contract amount
+	 */
 	private static double contractMax() {
 		return (Double)RunEnvironment.getInstance().getParameters().getValue("maxIndividualContractSize");
 	}
 
+	/**
+	 * Static method to get the user defined parameter for minimum contract amount.
+	 * @return minimum contract amount
+	 */
+	private static double contractMin() {
+		return (Double)RunEnvironment.getInstance().getParameters().getValue("minIndividualContractSize");
+	}
+
+	/**
+	 * Static method to get the user defined parameter for team salary cap.
+	 * @return team salary cap
+	 */
 	private static double salaryCap() {
 		return (Double)RunEnvironment.getInstance().getParameters().getValue("salaryCap");
 	}
-	
+
+	/**
+	 * Simulates a draft by adding new Player objects to the context.
+	 */
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 4.0)
+	public void draft() {
+		List<Player> draftClass = PlayerGenerator.generateDraftClass();
+		
+		Context<Object> context = ContextUtils.getContext(this);
+		for(Player player : draftClass) {
+			context.add(player);
+		}
+	}
+
 	/**
 	 * Computes the total parity of the league, which is simply the
 	 * sum of the parity contributions for each team
@@ -46,15 +66,5 @@ public class League {
 			sum += tm.getParityContribution();
 		}
 		return sum;
-	}
-	
-	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 4.0)
-	public void draft() {
-		List<Player> draftClass = PlayerGenerator.generateDraftClass();
-		
-		Context<Object> context = ContextUtils.getContext(this);
-		for(Player player : draftClass) {
-			context.add(player);
-		}
 	}
 }

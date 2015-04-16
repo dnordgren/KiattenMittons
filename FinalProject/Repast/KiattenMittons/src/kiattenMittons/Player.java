@@ -1,6 +1,7 @@
 package kiattenMittons;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 import kiattenMittons.LeagueGeneration.PlayerGenerator;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
@@ -10,33 +11,23 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.util.ContextUtils;
 
 public class Player {
-	private double per;
-	private TeamName teamName;
-	private int yearsLeft;
-	private Contract contract;
-	private ArrayList<Contract> offers;
-	private double teamPreferenceFactor;
-	private double desperationMultiplier;
-	
 	private static final double[] COEFFICIENTS = {
 		12671051.1, -3003452.8, 217568.5, -3483.8
 	};
-	
-	public static Comparator<Player> comparator = new Comparator<Player>() {
-		public int compare(Player p1, Player p2) {
-			if (p1.getPER() > p2.getPER()) {
-				return -1;
-			} else if (p1.getPER() < p2.getPER()) {
-				return 1;
-			}
-			return 0;
-		}
-	};
-	
+
+	private Contract contract;
+	private double desperationMultiplier;
+	private ArrayList<Contract> offers;
+	private double per;
+	private TeamName teamName;
+	private double teamPreferenceFactor;
+	private int yearsLeft;
+
 	/**
 	 * Constructor that lets you assign PER,
 	 * for setting up the initial league
 	 * @param per
+	 * @param teamName
 	 */
 	public Player(double per, TeamName teamName) {
 		this.per = per;
@@ -47,7 +38,7 @@ public class Player {
 		this.teamPreferenceFactor = PlayerGenerator.generatePreferenceFactor();
 		this.desperationMultiplier = 1;
 	}
-	
+
 	/**
 	 * Copy constructor
 	 * @param player to be copied
@@ -61,69 +52,46 @@ public class Player {
 		this.teamPreferenceFactor = player.teamPreferenceFactor;
 		this.desperationMultiplier = player.desperationMultiplier;
 	}
-	
+
 	/**
-	 * Getter for PER
-	 * @return PER
+	 * Overloaded comparator that allows for proper ordering of Player objects.
 	 */
-	public double getPER() {
-		return per;
-	}
-	
-	public TeamName getTeamName() {
-		return teamName;
-	}
-
-	public void setTeamName(TeamName teamName) {
-		this.teamName = teamName;
-	}
-
-	public int getYearsLeft() {
-		return this.yearsLeft;
-	}
-	
-	public void setYearsLeft(int years) {
-		this.yearsLeft = years;
-	}
-
-	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 1.0)
-	public void updateYearsLeft() {
-		//check if they leave the NBA
-		if (0 == --this.yearsLeft) {
-			Context<Object> context = ContextUtils.getContext(this);
- 			context.remove(this);
- 			return;
+	public static Comparator<Player> comparator = new Comparator<Player>() {
+		public int compare(Player p1, Player p2) {
+			if (p1.getPER() > p2.getPER()) {
+				return -1;
+			} else if (p1.getPER() < p2.getPER()) {
+				return 1;
+			}
+			return 0;
 		}
-		
-		//update years
-		if (null != this.contract) {
-			this.contract.updateYearsRemaining();
-		}
-		
-		//scale up TPF slightly every year
-		teamPreferenceFactor += (1 - teamPreferenceFactor) * 0.1;
-		
-		//reset desperation multiplier
-		desperationMultiplier = 1;
-	}
-	
+	};
+
 	/**
-	 * Multiplier decreases at each round (will be reset at
-	 * the end of a year).
+	 * Adds offer to list of offers player will consider.
+	 * @param contract
 	 */
-	@ScheduledMethod(start = 1, interval = 1, priority = 1.0)
-	public void increaseDesperation() {
-		desperationMultiplier *= .993;
+	public void addOffer(Contract contract) {
+		this.offers.add(contract);
 	}
-	
-	public Contract getContract() {
-		return this.contract;
+
+	/**
+	 * Accept the best offer if it is good enough.
+	 */
+	@ScheduledMethod(start = 1, interval = 1, priority = 2.0)
+	public void evaluateOffers() {
+		if (offers.size() == 0) {
+			return;
+		}
+		Contract bestOffer = findBestOffer();
+		boolean accept = acceptOffer(bestOffer);
+		if (accept) {
+			bestOffer.getSignedTeam().registerAcceptedOffer(this, bestOffer);
+			this.contract = bestOffer;
+		}
+		resetOffers();
 	}
-	
-	public void signWithTeam(Team team, int years, double value) {
-		this.contract.signWithTeam(team, years, value);
-    }
-	
+
 	/**
 	 * Based on a function fit on current NBA player PER
 	 * and salary data, determine the expected value
@@ -162,45 +130,64 @@ public class Player {
 		
 		return value;
 	}
-	
-	public void addOffer(Contract contract) {
-		this.offers.add(contract);
+
+	/**
+	 * Multiplier decreases at each round (will be reset at
+	 * the end of a year).
+	 */
+	@ScheduledMethod(start = 1, interval = 1, priority = 1.0)
+	public void increaseDesperation() {
+		desperationMultiplier *= .993;
 	}
 
 	/**
-	 * Accept the best offer if it is good enough
+	 * Sets a contract for a player. This is only used initially in the LeagueBuilder.
+	 * @param team
+	 * @param years
+	 * @param value
 	 */
-	@ScheduledMethod(start = 1, interval = 1, priority = 2.0)
-	public void evaluateOffers() {
-		if (offers.size() == 0) {
-			return;
-		}
-		Contract bestOffer = findBestOffer();
-		boolean accept = acceptOffer(bestOffer);
-		if (accept) {
-			bestOffer.getSignedTeam().registerAcceptedOffer(this, bestOffer);
-			this.contract = bestOffer;
-		}
-		resetOffers();
-	}
-	
+	public void signWithTeam(Team team, int years, double value) {
+		this.contract.signWithTeam(team, years, value);
+    }
+
 	/**
-	 * Compute the values of each offer, and return the one
-	 * with the highest value to the player
-	 * @return highest valued offer
+	 * Updates the years left for the player, as well as the years left on its
+	 * current contract.
 	 */
-	private Contract findBestOffer() {
-		Contract bestOffer = offers.get(0), currentOffer;
-		double bestOfferValue = evaluateOffer(bestOffer), currentOfferValue;
-		for(int i = 1; i < offers.size(); i++) {
-			currentOffer = offers.get(i);
-			currentOfferValue = evaluateOffer(currentOffer);
-			if(currentOfferValue > bestOfferValue) {
-				bestOfferValue = currentOfferValue;
-				bestOffer = currentOffer;
-			}
+	@ScheduledMethod(start = LeagueBuilder.YEAR_LENGTH, interval = LeagueBuilder.YEAR_LENGTH, priority = 1.0)
+	public void updateYearsLeft() {
+		// Update years left and check if the player has no more years left (exits NBA).
+		if (0 == --this.yearsLeft) {
+			Context<Object> context = ContextUtils.getContext(this);
+            context.remove(this);
+            return;
 		}
-		return bestOffer;	
+
+		// Update years left on the contract, if it exists.
+		if (null != this.contract) {
+			this.contract.updateYearsRemaining();
+		}
+
+		// Increase the team preference factor each year.
+		teamPreferenceFactor += (1 - teamPreferenceFactor) * 0.1;
+		
+		// Reset the desperation factor.
+		desperationMultiplier = 1;
+	}
+
+	/**
+	 * Checks if an offer is acceptable.
+	 * @param offer
+	 * @return true if offer is acceptable
+	 */
+	private boolean acceptOffer(Contract offer) {
+		double expectedAmount = getPerBasedValue() * desperationMultiplier;
+		// players can't be worth more than the max contract
+		if (expectedAmount > kiattenMittons.League.CONTRACT_MAX) {
+			expectedAmount = kiattenMittons.League.CONTRACT_MAX;
+		}
+
+		return offer.getValue() >= expectedAmount;
 	}
 
 	/**
@@ -224,23 +211,77 @@ public class Player {
 		return offerValue;
 	}
 
-	
+	/**
+	 * Compute the values of each offer, and return the one
+	 * with the highest value to the player
+	 * @return highest valued offer
+	 */
+	private Contract findBestOffer() {
+		Contract bestOffer = offers.get(0), currentOffer;
+		double bestOfferValue = evaluateOffer(bestOffer), currentOfferValue;
+		for(int i = 1; i < offers.size(); i++) {
+			currentOffer = offers.get(i);
+			currentOfferValue = evaluateOffer(currentOffer);
+			if(currentOfferValue > bestOfferValue) {
+				bestOfferValue = currentOfferValue;
+				bestOffer = currentOffer;
+			}
+		}
+		return bestOffer;
+	}
+
+	/**
+	 * Clear out offers from the previous round.
+	 */
 	private void resetOffers() {
 		this.offers = new ArrayList<Contract>();
 	}
 
 	/**
-	 * Checks if an offer is acceptable
-	 * @param offer
-	 * @return true if offer is acceptable
+	 * Gets the Player's contract.
+	 * @return contract
 	 */
-	private boolean acceptOffer(Contract offer) {
-		double expectedAmount = getPerBasedValue() * desperationMultiplier;
-		// players can't be worth more than the max contract
-		if (expectedAmount > kiattenMittons.League.CONTRACT_MAX) {
-			expectedAmount = kiattenMittons.League.CONTRACT_MAX;
-		}
+	public Contract getContract() {
+		return this.contract;
+	}
 
-		return offer.getValue() >= expectedAmount;
+	/**
+	 * Gets the PER.
+	 * @return PER
+	 */
+	public double getPER() {
+		return per;
+	}
+
+	/**
+	 * Gets the team the player is associated with.
+	 * @return teamName
+	 */
+	public TeamName getTeamName() {
+		return teamName;
+	}
+
+	/**
+	 * Sets the teamName.
+	 * @param teamName
+	 */
+	public void setTeamName(TeamName teamName) {
+		this.teamName = teamName;
+	}
+
+	/**
+	 * Gets the years the player has remaining in the league.
+	 * @return yearsLeft
+	 */
+	public int getYearsLeft() {
+		return this.yearsLeft;
+	}
+
+	/**
+	 * Sets the years the player has remaining in the league.
+	 * @param years
+	 */
+	public void setYearsLeft(int years) {
+		this.yearsLeft = years;
 	}
 }

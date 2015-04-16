@@ -13,16 +13,17 @@ public class TeamGenerator {
 		UTAH, BKN, SA, IND, ORL,
 		NY, MEM, DET, ATL, TOR,
 		BOS, LAL, WSH, MIN, DAL,
-		CHA, DEN, PHX, MIL, PHI,
-		FREE
+		CHA, DEN, PHX, MIL, PHI
 	}
 
+	/**
+	 * Generates a list of teams for each team in the enum
+	 * @return
+	 */
 	public static List<Team> generateTeams() {
 		List<Team> teams = new ArrayList<Team>();
 		for (TeamName teamName : TeamName.values()) {
-			if (teamName != TeamName.FREE) {
-				teams.add(new Team(teamName));
-			}
+			teams.add(new Team(teamName));
 		}
 		return teams;
 	}
