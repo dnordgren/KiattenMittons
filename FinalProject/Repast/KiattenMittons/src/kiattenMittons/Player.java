@@ -127,7 +127,8 @@ public class Player {
 	/**
 	 * Based on a function fit on current NBA player PER
 	 * and salary data, determine the expected value
-	 * of this NBA player
+	 * of this NBA player. Analogous to what players
+	 * believe they deserve in a negotiation.
 	 * @return
 	 */
 	public double getPerBasedValue() {
@@ -137,18 +138,27 @@ public class Player {
 		 * the function is only trained on this range of values,
 		 * so anything outside this range hits a ceiling/floor
 		 */
-		double effectivePer = Math.max(per, 8.7349);
-		effectivePer = Math.min(effectivePer, 32.8994);
+		double localMin = 8.7349, localMax = 32.8994;
+		double effectivePer = Math.max(per, localMin);
+		effectivePer = Math.min(effectivePer, localMax);
 		
 		/*
 		 * the fitted function is as follows:
 		 * value = c[0] + c[1] * per + c[2] * per^2 + c[3] * per^3
 		 */
 		for(int i = 0; i < COEFFICIENTS.length; i++) {
-			value += COEFFICIENTS[i] * Math.pow(per, i);
+			value += COEFFICIENTS[i] * Math.pow(effectivePer, i);
 		}
 		
 		value = Math.min(value, League.CONTRACT_MAX);
+		
+		/*
+		 * if the player's rating is below 8.73 (local min in the fitted function)
+		 * replace it with a linear scale from the contract minimum to and 8.73 PER contract
+		 */
+		if(per < localMin) {
+			return (value - League.CONTRACT_MIN) * (per / localMin) + League.CONTRACT_MIN; 
+		}
 		
 		return value;
 	}
