@@ -2,7 +2,7 @@ library(ggplot2)
 source('parity.R')
 
 types <- c('$13.7 mil', '$20.6 mil', '$31.0 mil', '$41.3 mil')
-parity <- get_median_parity('data/experiment3/parity.2015.Apr.27.00_18_14.csv')
+parity <- get_median_parity('data/max_player.csv')
 
 parity[,type:=types[ceiling(run/50)]]
 

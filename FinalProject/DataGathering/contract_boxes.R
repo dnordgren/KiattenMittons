@@ -2,13 +2,13 @@ library(readr)
 library(data.table)
 
 source('parity.R')
-dirs <- list.dirs('data/experiment2/', full.names = T)[-1]
 
-parity <- rbindlist(lapply(dirs, get_box))
-translate <- c('Average', '-1', '-2', '+1', '+2')
-names(translate) <- dirs
-parity[,type:=translate[raw_type]]
-parity[,type:=factor(type, levels = c('-2', '-1', 'Average', '+1', '+2'))]
+types <- c('-2', '-1', 'Base', '+1', '+2')
+parity <- get_median_parity('data/contract.csv')
+
+parity[,type:=types[ceiling(run/50)]]
+parity[,type:=factor(type, levels=types)]
+
 g <- ggplot(parity, aes(y=parity, x=type)) + 
 	geom_boxplot() + 
 	labs(title='Contract Length vs Parity', 
