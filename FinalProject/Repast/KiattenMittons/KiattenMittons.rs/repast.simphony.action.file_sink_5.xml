@@ -1,12 +1,12 @@
 <repast.simphony.data2.engine.FileSinkDescriptor>
-  <name>League Parity Data</name>
+  <name>parity</name>
   <dataSet>League Parity</dataSet>
   <delimiter>,</delimiter>
-  <format>TABULAR</format>
+  <format>LINE</format>
   <sourceIds class="linked-hash-set">
     <string>LeagueParity</string>
     <string>tick</string>
   </sourceIds>
-  <fileName>leagueParity.csv</fileName>
+  <fileName>parity.csv</fileName>
   <addTimeStamp>true</addTimeStamp>
 </repast.simphony.data2.engine.FileSinkDescriptor>
