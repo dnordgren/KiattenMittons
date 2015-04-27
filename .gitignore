@@ -69,4 +69,6 @@ config.xml
 GameDay1/q/*
 
 output/
+sim_years.txt
+
 
