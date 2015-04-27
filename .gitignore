@@ -67,3 +67,6 @@ Repast.settings
 config.xml
 !GameDay2/test_votes/*
 GameDay1/q/*
+
+output/
+
