@@ -2,16 +2,22 @@ library(readr)
 library(data.table)
 
 source('parity.R')
-dirs <- list.dirs('data/experiment1/', full.names = T)[-1]
 
-parity <- rbindlist(lapply(dirs, get_box))
-translate <- c('$42 mil', '$95 mil', '$125 mil', '$63 mil')
-names(translate) <- dirs
-parity[,type:=translate[raw_type]]
-parity[,type:=factor(type, levels = c('$42 mil', '$63 mil', '$95 mil', '$125 mil'))]
-g <- ggplot(parity, aes(y=parity, x=type)) + 
-	geom_boxplot() + 
-	labs(title='Team Salary Cap vs Parity', 
+real_cap <- 6.3065E7
+min_cap <- real_cap * 2 / 3
+max_cap <- real_cap * 2
+vals <- seq(min_cap, max_cap, length.out = 250)
+
+parity <- get_median_parity('data/salary_cap.csv')
+
+plot_dat <- data.frame(parity=parity$parity, salary=vals)
+
+g <- ggplot(plot_dat, aes(x=vals, y=parity)) + 
+	geom_point() + 
+	stat_smooth(method='lm') +
+	labs(title='Salary Cap vs Parity', 
 		 y='Parity', 
-		 x='Salary Cap') #+ stat_smooth(aes(group=1), method='lm')
+		 x='Salary Cap')
 print(g)
+
+print(summary(lm(parity~vals, plot_dat)))
