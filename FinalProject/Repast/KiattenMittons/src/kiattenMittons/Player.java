@@ -22,7 +22,6 @@ public class Player {
 	private TeamName teamName;
 	private double teamPreferenceFactor;
 	private int yearsLeft;
-	private int yearsIn;
 
 	/**
 	 * Constructor that lets you assign PER,
@@ -38,7 +37,6 @@ public class Player {
 		this.yearsLeft = PlayerGenerator.generateYearsLeft();
 		this.teamPreferenceFactor = PlayerGenerator.generatePreferenceFactor();
 		this.desperationMultiplier = 1;
-		this.yearsIn = 1;
 	}
 
 	/**
@@ -53,7 +51,6 @@ public class Player {
 		this.offers = new ArrayList<Contract>();
 		this.teamPreferenceFactor = player.teamPreferenceFactor;
 		this.desperationMultiplier = player.desperationMultiplier;
-		this.yearsIn = player.yearsIn;
 	}
 
 	/**
@@ -163,7 +160,6 @@ public class Player {
 		if (0 == --this.yearsLeft) {
 			Context<Object> context = ContextUtils.getContext(this);
             context.remove(this);
-            yearsIn = -1000;
             return;
 		}
 
@@ -177,12 +173,6 @@ public class Player {
 		
 		// Reset the desperation factor.
 		desperationMultiplier = 1;
-		
-		if(yearsLeft > 0) {
-			
-			yearsIn++;
-			System.out.println(yearsIn);
-		}
 	}
 
 	/**
