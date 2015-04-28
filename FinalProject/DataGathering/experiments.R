@@ -1,4 +1,8 @@
 
+# over cap (max overage = 2)
+x <- rep(seq(0, 1, length.out = 30), each=10)
+paste(x, collapse=' ')
+
 # Salary Cap
 real_cap <- 6.3065E7
 min_cap <- real_cap * 2 / 3
