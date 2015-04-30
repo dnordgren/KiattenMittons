@@ -9,6 +9,7 @@ import kiattenMittons.LeagueGeneration.TeamGenerator;
 import kiattenMittons.LeagueGeneration.TeamGenerator.TeamName;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
+import repast.simphony.engine.environment.RunEnvironment;
 
 public class LeagueBuilder implements ContextBuilder<Object> {
 	public static final int YEAR_LENGTH = 100;
@@ -53,6 +54,8 @@ public class LeagueBuilder implements ContextBuilder<Object> {
 		// Create the league.
 		League league = new League(teams);
 		context.add(league);
+		
+		RunEnvironment.getInstance().endAt(3000);
 		
 		return context;
 	}

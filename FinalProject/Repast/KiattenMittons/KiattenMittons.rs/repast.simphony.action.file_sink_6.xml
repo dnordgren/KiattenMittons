@@ -1,12 +1,12 @@
 <repast.simphony.data2.engine.FileSinkDescriptor>
-  <name>Player Count Data</name>
-  <dataSet>Player Count</dataSet>
+  <name>sd</name>
+  <dataSet>Team Power Index</dataSet>
   <delimiter>,</delimiter>
-  <format>TABULAR</format>
+  <format>LINE</format>
   <sourceIds class="linked-hash-set">
+    <string>PowerIndexStandardDeviation</string>
     <string>tick</string>
-    <string>PlayerCount</string>
   </sourceIds>
-  <fileName>playerCount.csv</fileName>
+  <fileName>sd.csv</fileName>
   <addTimeStamp>true</addTimeStamp>
 </repast.simphony.data2.engine.FileSinkDescriptor>

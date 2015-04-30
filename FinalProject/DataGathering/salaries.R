@@ -23,7 +23,7 @@ get_salary_table <- function(page_number) {
 salary_tables <- lapply(1:11, get_salary_table)
 salary_table <- rbindlist(salary_tables)
 
-players <- read_csv('../Repast/KiattenMittons/resources/players.csv', col_names=c('team', 'per'))
+players <- read_csv('tmp.csv', col_names=c('team', 'per'))
 players <- data.table(players)
 
 salary_per <- data.table(salary=salary_table$SALARY[1:nrow(players)], per=players$per)
@@ -42,5 +42,5 @@ per_range <- seq(min(salary_per$per), max(salary_per$per), by=.1)
 line_data <- data.frame(per=per_range)
 line_data$salary <- predict(salary_model, newdata=line_data)
 fitted_g <- ggplot(salary_per, aes(x=per, y=salary)) + geom_point() +
-	geom_line(data=line_data, aes(x=per, y=salary))
+	geom_line(data=line_data, aes(x=per, y=salary)) + labs(title='Player Value', x='PER', y='Salary')
 print(fitted_g)
