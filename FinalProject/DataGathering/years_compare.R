@@ -24,11 +24,12 @@ get_page <- function(page_number) {
 # there are 10 pages
 exps <- lapply(1:10, get_page)
 exps <- unlist(exps)
-real_years <- as.numeric(regmatches(exps, regexpr('^[0-9]*', es)))
+real_years <- as.numeric(regmatches(exps, regexpr('^[0-9]*', exps)))
 hist(real_years)
 hist(years)
 
 
 dat <- data.frame(years=c(real_years, years-17), type=c(rep(0, length(real_years)), rep(1, length(years))))
-ggplot(dat, aes(years, group=type, fill=factor(type))) + geom_density(alpha=.2)
+dat$model <- factor(c('NBA', 'Simulated')[dat$type+1])
+ggplot(dat, aes(years, group=type, fill=model)) + geom_density(alpha=.2)
 
